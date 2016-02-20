@@ -1,0 +1,230 @@
+<html>
+<head>
+    <title>Pianobar Client</title>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, height=device-height, target-densitydpi=device-dpi">
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script><style type="text/css"></style>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"  media="screen,projection"/>
+  </head>
+<body>
+    <div class="row">
+
+        <div class="col s12 m6">
+            <div class="row" id="currentSongContainer">
+                <div class="col s12 m12 l9">
+                    <div class="card">
+                        <div class="card-image">
+                            <img id="songCoverArt" src="{{cover_art_src}}">
+                        </div>
+                        <div class="card-content">
+                            <div class="flow-text" id="songArtist">{{artist}}</div>
+                            <div class="card-title" id="songTitle">{{title}}</div>
+                            <div class="flow-text" id="songAlbum">{{album}}</div>
+                        </div>
+                        <div class="card-action">
+                            <div id="controls" style="">
+                                    <div id="pause" class="ctrl-btn waves-effect waves-light btn">
+                                        <i class="fa fa-pause"></i>
+                                    </div>
+                                    <div id="play" class="ctrl-btn waves-effect waves-light btn">
+                                        <i class="fa fa-play"></i>
+                                    </div>
+                                    <div id="next" class="ctrl-btn waves-effect waves-light btn">
+                                        <i class="fa fa-step-forward"></i>
+                                    </div>
+                                    <span class="ctrl-button-group">
+                                        <div id="lowerVolume" class="ctrl-btn waves-effect waves-light btn">
+                                            <i class="fa fa-volume-down"></i>
+                                        </div>
+                                        <div id="raiseVolume" class="ctrl-btn waves-effect waves-light btn">
+                                            <i class="fa fa-volume-up"></i>
+                                        </div>
+                                    </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col s12 m6">
+            <div id="stations" class="collection with-header">
+                <div class="collection-header">
+                    <div class="input-field">
+                        <input id="stationSearch" type="text" class="validate">
+                        <label for="stationSearch">Stations</label>
+                    </div>
+                </div>
+                {% for stationId, stationName in stations.iteritems() %}
+                <a class="collection-item station-item" data-station-id="{{stationId}}">
+                    {{stationName}}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+    <script>
+    $(function() {
+        // Global variables
+        var stationId = {{current_station_id}};
+        var colorz = [];
+
+        // Set initial state
+        setActiveStation(stationId);
+        onPlayBtn();
+
+        // Event delegation
+        $('#stationSearch').on('keyup', onStationSearch);
+        $('#play').click(onPlayBtn);
+        $('#pause').click(onPauseBtn);
+        $('#next').click(onNextBtn);
+        $('#lowerVolume').click(onLowerVolumeBtn);
+        $('#raiseVolume').click(onRaiseVolumeBtn);
+        $('.station-item').click(function(e) {onStationItem(e);});
+        $('.station-item:not(.active)').hover(function(e) {
+            $(e.currentTarget).css('color',colorz[0]);
+            $(e.currentTarget).css('background-color',colorz[1]);
+        }, function(e) {
+            $(e.currentTarget).css('color',colorz[1]);
+            $(e.currentTarget).css('background-color',colorz[2]);
+        });
+
+
+        function onPlayBtn() {
+            $.ajax({
+                type: "POST",
+                url: '/play',
+                success: function(res) {
+                    song = JSON.parse(res);
+                    Materialize.toast('playing', 2000);
+                    setSongCard(song);
+                }
+            });
+        };
+
+        function onPauseBtn() {
+            $.ajax({
+                type: "POST",
+                url: '/pause',
+                success: function(res) {
+                    Materialize.toast('paused', 2000)
+                }
+            });
+        };
+
+        function onNextBtn() {
+            $.ajax({
+                type: "POST",
+                url: '/next',
+                success: function(res) {
+                    song = JSON.parse(res);
+                    pollThenSet(song);
+                    Materialize.toast('next', 2000)
+                }
+            });
+        };
+
+        function onLowerVolumeBtn() {
+            $.ajax({
+                type: "POST",
+                url: '/lower_volume',
+                success: function(res) {
+                    Materialize.toast('a little softer now', 2000)
+                }
+            });
+        };
+
+        function onRaiseVolumeBtn() {
+            $.ajax({
+                type: "POST",
+                url: '/raise_volume',
+                success: function(res) {
+                    Materialize.toast('a little louder now', 2000)
+                }
+            });
+        };
+
+        function onStationItem(e) {
+            var station = e.currentTarget;
+            if (station.dataset.stationId == stationId)
+                return;
+            stationId = station.dataset.stationId
+            $.ajax({
+                type: "POST",
+                url: '/change_station/' + stationId,
+                success: function(res) {
+                    song = JSON.parse(res);
+                    setActiveStation(stationId);
+                    pollThenSet(song);
+                }
+            });
+        };
+
+        function onStationSearch(e) {
+            var q = e.currentTarget.value.toLocaleLowerCase();
+            $('.station-item').each(function(index, stationEl) {
+                var stationText = stationEl.text.toLocaleLowerCase();
+                // In future hold more info, like history of song names, artists...
+                if (stationText.indexOf(q) == -1) {
+                    $(stationEl).addClass('stationHidden');
+                }
+                else {
+                    $(stationEl).removeClass('stationHidden');
+                }
+            });
+        }
+
+        function setActiveStation(stationId) {
+            $('.station-item').each(function(index, stationEl) {
+                $(stationEl).removeClass('active');
+                if (index == stationId) {
+                    $(stationEl).addClass('active');
+                }
+            });
+        };
+
+        function pollThenSet(songObj) {
+            $.ajax({
+                type: "POST",
+                url: '/get_info',
+                success: function(res) {
+                    var newSongObj = JSON.parse(res);
+                    if (newSongObj.title == songObj.title) {
+                        // Until a notification system is in place
+                        // polling is the best option.
+                        setTimeout(function() {
+                            pollThenSet(newSongObj);
+                        }, 300);
+                    }
+                    else {
+                        setSongCard(newSongObj);
+                    }
+                }
+            });
+        }
+
+        function setSongCard(songObj) {
+            $('#songArtist').text(songObj.artist);
+            $('#songAlbum').text(songObj.album);
+            $('#songTitle').text(songObj.title);
+            $('#songCoverArt')[0].src = songObj.coverArt;
+
+            colorz = songObj.colorz;
+            $('.card-content').css('background-color', colorz[0]);
+            $('.card-content').css('color', colorz[2]);
+            $('.ctrl-btn').css('background-color', colorz[1]);
+            $('.ctrl-btn').css('color', colorz[0]);
+            $('#songArtist').css('border-color', colorz[2]);
+            $('#songAlbum').css('border-color', colorz[2]);
+
+            $('a.collection-item.station-item').css('background-color', colorz[2]);
+            $('a.collection-item.station-item').css('color', colorz[1]);
+            $('a.collection-item.station-item.active').css('background-color', colorz[0]);
+        }
+    })
+    </script>
+</body>

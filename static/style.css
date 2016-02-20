@@ -1,0 +1,48 @@
+.stationHidden {
+    visibility: hidden;
+    padding: 0px !important;
+    height: 0px !important;
+    margin: 0px;
+}
+
+.card-action {
+    text-align: center;
+}
+
+.ctrl-btn {
+    margin-top: 10px;
+}
+
+.ctrl-button-group {
+    display: -webkit-inline-box;
+}
+
+.input-field {
+    margin: 30px !important;
+}
+
+.input-field label {
+    font-size: larger !important;
+}
+
+#songTitle {
+    margin-top: 8px;
+    margin-bottom: 11px;
+    text-align: center;
+}
+
+#songArtist {
+    border: solid;
+    padding: 20px;
+    text-align: right;
+    border-bottom: none;
+    border-left: none;
+}
+
+#songAlbum {
+    border: solid;
+    padding: 5px;
+    text-align: left;
+    border-top: none;
+    border-right: none;
+}
