@@ -9,12 +9,10 @@ from flask import Flask, request, render_template
 import settings
 from pianobar_control import PianobarControl 
 
-
 app = Flask('Pianobar Client',
         template_folder=settings.ROOT_DIR+'/templates',
         static_folder=settings.ROOT_DIR+ '/static')
 
-control = ''
 control = PianobarControl()
 
 def get_current_song():

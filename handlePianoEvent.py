@@ -14,7 +14,12 @@ if sys.argv[1] == 'songstart':
             event[key] = value.strip()
         except ValueError:
             pass
-    # do k-means neighboring to get top colors
+
+    # do k-means clustering to get top 3 colors
     event['colorz'] = get_colors(event['coverArt'])
+
     with open(settings.HISTORY_PATH, 'w') as f:
         f.write(json.dumps(event))
+
+    # enqueue .mp3 via youtube-dl
+    # dequeue oldest non-saved .mp3 -- unless n < 10

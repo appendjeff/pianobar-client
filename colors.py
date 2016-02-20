@@ -1,3 +1,9 @@
+'''
+Besides the get_colors() function, all of this code was taken from
+Charles Leifer's blog. See the article below:
+http://charlesleifer.com/blog/using-python-and-k-means-to-find-the-dominant-colors-in-images/
+https://github.com/coleifer/
+'''
 from collections import namedtuple
 from math import sqrt
 import random
@@ -73,10 +79,10 @@ def kmeans(points, k, min_diff):
     return clusters
 
 def get_colors(image_url):
-    #image_url = 'http://cont-1.p-cdn.com/images/public/rovi/albumart/4/2/9/5/093624575924_500W_500H.jpg'
     remote_img = cStringIO.StringIO(urllib.urlopen(image_url).read())
     return colorz(remote_img)
 
 if __name__ == '__main__':
-    main()
+    image_url = 'http://cont-1.p-cdn.com/images/public/rovi/albumart/4/2/9/5/093624575924_500W_500H.jpg'
+    print(get_colors(image_url))
 
