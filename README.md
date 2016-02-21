@@ -9,11 +9,14 @@ Get yourself [pianobar], if you haven't already. Make sure that pianobar is runn
 pianobar
 ```
 
-Besides pianobar, the only requirment is python's Flask. Once pianobar is running smoothly Flask must be installed.
+Besides pianobar, the requirments are python's Flask and Pillow. Once pianobar is running smoothly Flask must be installed.
 
 ```sh
 pip install flask
 ```
+
+Then get [Pillow] from this source:
+https://pillow.readthedocs.org/en/3.0.0/installation.html
 
 Clone this repo to where it will be stored. On ubuntu I store it in ~/src
 ```sh
@@ -41,6 +44,7 @@ This pianobar client uses a couple of open source projects to work properly:
 * [Pianobar] - console client for the web radio Pandora.
 * [Flask] - web microframework for python.
 * [jQuery] - fast, small, and feature-rich JavaScript library.
+* [Pillow] - python image libary
 
 And of course this pianobar client itself is open source.
 
@@ -62,5 +66,6 @@ MIT
    [Pianobar]: <https://github.com/PromyLOPh/pianobar>
    [jQuery]: <http://jquery.com>
    [Flask]: <http://flask.pocoo.org/>
+   [Pillow]: <https://pillow.readthedocs.org/en/3.0.0/index.html>
 
 
