@@ -18,11 +18,6 @@ control = PianobarControl()
 def get_current_song():
     with open(settings.HISTORY_PATH, 'r') as f:
         current_song = json.loads(f.read())
-        return current_song
-
-@app.route("/")
-def root():
-    current_song = get_current_song()
     current_station_name = current_song['stationName']
     current_station_id = 0
     c = 0
@@ -36,14 +31,21 @@ def root():
         if current_song[key] == current_station_name:
             current_station_id = c
         c +=1
+    current_song['stations'] = stations
+    current_song['current_station_id'] = current_station_id
+    return current_song
+
+@app.route("/")
+def root():
+    current_song = get_current_song()
 
     return render_template('index.html',
             cover_art_src=current_song['coverArt'],
             artist=current_song['artist'],
             album=current_song['album'],
             title=current_song['title'],
-            stations=stations,
-            current_station_id=current_station_id
+            stations=current_song['stations'],
+            current_station_id=current_song['current_station_id']
             )
 
 @app.route("/play", methods=['GET', 'POST'])
