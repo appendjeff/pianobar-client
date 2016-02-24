@@ -1,3 +1,9 @@
+@media(max-width:1100px) {
+   div#mainContent {
+       max-width:initial;
+   }
+}
+
 .stationHidden {
     visibility: hidden;
     padding: 0px !important;
@@ -20,10 +26,24 @@
 .input-field {
     margin: 30px !important;
 }
-
-.input-field label {
-    font-size: larger !important;
+input:focus{
+    border-color: gray !important;
+    box-shadow: none !important;
 }
+
+.station-item {
+    padding: 4% 6% !important;
+}
+
+.stationHidden {
+    /*
+     * For those things below active they should be 0 margin bottom
+     *
+    */
+    margin-bottom: -1px !important;
+    padding: 0px !important;
+}
+
 
 #songTitle {
     margin-top: 8px;
@@ -45,4 +65,21 @@
     text-align: left;
     border-top: none;
     border-right: none;
+}
+
+#stationitems {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#searchTagContainer i {
+    margin-left: 3px;
+}
+
+#mainContent {
+    max-width: 1000px;
+    background-color: white;
+}
+body {
+    background-color: #e7e7e7;
 }

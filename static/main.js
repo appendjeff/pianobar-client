@@ -1,39 +1,58 @@
-function main(stationId) {
-    // Global variables
-    var stationId = stationId;
+'use strict'
 
+var globalStationId;
+var colorz = ['cornflowerblue', 'gray', 'aquamarine'];
+var tags = [];
+var tagCount = 0;
+
+function main(stationId) {
     // Set initial state
-    setActiveStation(stationId);
-    onPlayBtn();
+    $.ajax({
+        type: "POST",
+        url: '/get_info',
+        success: function(res) {
+            var song = JSON.parse(res);
+            globalStationId = song['current_station_id'];
+            setActiveStation();
+            setSongCard(song);
+            longPolling({});
+        }
+    });
+
 
     // Event delegation
-    $('#stationSearch').on('keyup', onStationSearch);
     $('#play').click(onPlayBtn);
     $('#pause').click(onPauseBtn);
     $('#next').click(onNextBtn);
     $('#lowerVolume').click(onLowerVolumeBtn);
     $('#raiseVolume').click(onRaiseVolumeBtn);
-    $('.station-item').click(function(e) {onStationItem(e);});
-    $('.station-item:not(.active)').hover(function(e) {
-        $(e.currentTarget).css('color',colorz[0]);
-        $(e.currentTarget).css('background-color',colorz[1]);
-    }, function(e) {
-        $(e.currentTarget).css('color',colorz[1]);
-        $(e.currentTarget).css('background-color',colorz[2]);
-    });
+
+    $('.station-item').click(onStationItem);
+    $('.station-item:not(.active)').mouseenter(onStationMouseEnter) 
+    $('.station-item:not(.active)').mouseleave(onStationMouseLeave);
+
+    $('.collection-header').click(onCollectionHeaderClick);
+    $('#stationSearch').on('keyup', onStationSearch);
+    $('.stationSearchTag i').keyup(onSearchTagClick);
 
     /*
      * Functions
      */
+    function update(song) {
+        if (song.current_station_id != globalStationId) {
+            globalStationId = song.current_station_id;
+            setActiveStation();
+        }
+        setSongCard(song);
+    }
 
     function onPlayBtn() {
         $.ajax({
             type: "POST",
             url: '/play',
             success: function(res) {
-                song = JSON.parse(res);
+                update(JSON.parse(res))
                 Materialize.toast('playing', 2000);
-                setSongCard(song);
             }
         });
     };
@@ -53,7 +72,7 @@ function main(stationId) {
             type: "POST",
             url: '/next',
             success: function(res) {
-                song = JSON.parse(res);
+                var song = JSON.parse(res);
                 pollThenSet(song);
                 Materialize.toast('next', 2000)
             }
@@ -80,47 +99,71 @@ function main(stationId) {
         });
     };
 
-    function onStationItem(e) {
-        var station = e.currentTarget;
-        if (station.dataset.stationId == stationId)
+    function onStationItem() {
+        var station = this;
+        var candStationId = station.dataset.stationId;
+        if (candStationId == globalStationId)
             return;
-        stationId = station.dataset.stationId
         $.ajax({
             type: "POST",
-            url: '/change_station/' + stationId,
+            url: '/change_station/' + candStationId,
             beforeSend: function() {
                 Materialize.toast('changing station', 2000);
             },
             success: function(res) {
-                song = JSON.parse(res);
-                setActiveStation(stationId);
+                var song = JSON.parse(res);
+                globalStationId = parseInt(candStationId);
+                setActiveStation();
                 pollThenSet(song);
             }
         });
     };
 
-    function onStationSearch(e) {
-        var q = e.currentTarget.value.toLocaleLowerCase();
-        $('.station-item').each(function(index, stationEl) {
-            var stationText = stationEl.text.toLocaleLowerCase();
-            // In future hold more info, like history of song names, artists...
-            if (stationText.indexOf(q) == -1) {
-                $(stationEl).addClass('stationHidden');
-            }
-            else {
-                $(stationEl).removeClass('stationHidden');
-            }
-        });
-    }
-
-    function setActiveStation(stationId) {
+    function setActiveStation() {
         $('.station-item').each(function(index, stationEl) {
             $(stationEl).removeClass('active');
-            if (index == stationId) {
+            if (index == globalStationId) {
                 $(stationEl).addClass('active');
             }
         });
     };
+
+
+    function setSongCard(songObj) {
+        $('#songArtist').text(songObj.artist);
+        $('#songAlbum').text(songObj.album);
+        $('#songTitle').text(songObj.title);
+        $('#songCoverArt')[0].src = songObj.coverArt;
+
+        if ('colorz' in songObj)
+            colorz = songObj.colorz;
+        $('.card-content').css('background-color', colorz[0]);
+        $('.card-content').css('color', colorz[2]);
+        $('.ctrl-btn').css('background-color', colorz[1]);
+        $('.ctrl-btn').css('color', colorz[0]);
+        $('#songArtist').css('border-color', colorz[2]);
+        $('#songAlbum').css('border-color', colorz[2]);
+
+        $('a.collection-item.station-item').css('background-color', colorz[2]);
+        $('a.collection-item.station-item').css('color', colorz[1]);
+        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
+
+        $('.color-me').css('color', colorz[0]);
+    }
+
+    function onStationMouseEnter() {
+        if (this.dataset.stationId == globalStationId)
+            return;
+        $(this).css('color',colorz[0]);
+        $(this).css('background-color',colorz[1]);
+    }
+
+    function onStationMouseLeave() {
+        if (this.dataset.stationId == globalStationId)
+            return;
+        $(this).css('color',colorz[1]);
+        $(this).css('background-color',colorz[2]);
+    }
 
     function pollThenSet(songObj) {
         $.ajax({
@@ -136,93 +179,100 @@ function main(stationId) {
                     }, 300);
                 }
                 else {
-                    setSongCard(newSongObj);
+                    update(newSongObj);
                 }
             }
         });
     }
 
-    function setSongCard(songObj) {
-        $('#songArtist').text(songObj.artist);
-        $('#songAlbum').text(songObj.album);
-        $('#songTitle').text(songObj.title);
-        $('#songCoverArt')[0].src = songObj.coverArt;
-
-        colorz = songObj.colorz;
-        $('.card-content').css('background-color', colorz[0]);
-        $('.card-content').css('color', colorz[2]);
-        $('.ctrl-btn').css('background-color', colorz[1]);
-        $('.ctrl-btn').css('color', colorz[0]);
-        $('#songArtist').css('border-color', colorz[2]);
-        $('#songAlbum').css('border-color', colorz[2]);
-
-        $('a.collection-item.station-item').css('background-color', colorz[2]);
-        $('a.collection-item.station-item').css('color', colorz[1]);
-        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
-    }
-
-    // complement
-    temprgb=thisrgb;
-    temphsv=RGB2HSV(temprgb);
-    temphsv.hue=HueShift(temphsv.hue,180.0);
-    temprgb=HSV2RGB(temphsv);
-
-    function RGB2HSV(rgb) {
-        hsv = new Object();
-        max=max3(rgb.r,rgb.g,rgb.b);
-        dif=max-min3(rgb.r,rgb.g,rgb.b);
-        hsv.saturation=(max==0.0)?0:(100*dif/max);
-        if (hsv.saturation==0) hsv.hue=0;
-        else if (rgb.r==max) hsv.hue=60.0*(rgb.g-rgb.b)/dif;
-        else if (rgb.g==max) hsv.hue=120.0+60.0*(rgb.b-rgb.r)/dif;
-        else if (rgb.b==max) hsv.hue=240.0+60.0*(rgb.r-rgb.g)/dif;
-        if (hsv.hue<0.0) hsv.hue+=360.0;
-        hsv.value=Math.round(max*100/255);
-        hsv.hue=Math.round(hsv.hue);
-        hsv.saturation=Math.round(hsv.saturation);
-        return hsv;
-    }
-
-    // RGB2HSV and HSV2RGB are based on Color Match Remix [http://color.twysted.net/]
-    // which is based on or copied from ColorMatch 5K [http://colormatch.dk/]
-    function HSV2RGB(hsv) {
-        var rgb=new Object();
-        if (hsv.saturation==0) {
-            rgb.r=rgb.g=rgb.b=Math.round(hsv.value*2.55);
-        } else {
-            hsv.hue/=60;
-            hsv.saturation/=100;
-            hsv.value/=100;
-            i=Math.floor(hsv.hue);
-            f=hsv.hue-i;
-            p=hsv.value*(1-hsv.saturation);
-            q=hsv.value*(1-hsv.saturation*f);
-            t=hsv.value*(1-hsv.saturation*(1-f));
-            switch(i) {
-            case 0: rgb.r=hsv.value; rgb.g=t; rgb.b=p; break;
-            case 1: rgb.r=q; rgb.g=hsv.value; rgb.b=p; break;
-            case 2: rgb.r=p; rgb.g=hsv.value; rgb.b=t; break;
-            case 3: rgb.r=p; rgb.g=q; rgb.b=hsv.value; break;
-            case 4: rgb.r=t; rgb.g=p; rgb.b=hsv.value; break;
-            default: rgb.r=hsv.value; rgb.g=p; rgb.b=q;
+    function longPolling(songObj) {
+        var waitingPeriod = 1000;
+        $.ajax({
+            type: "POST",
+            url: '/get_info',
+            success: function(res) {
+                var newSongObj = JSON.parse(res);
+                if (newSongObj.title == songObj.title) {
+                    setTimeout(function() {
+                        longPolling(newSongObj);
+                    }, waitingPeriod);
+                }
+                else {
+                    update(newSongObj);
+                    setTimeout(function() {
+                        longPolling(newSongObj);
+                    }, waitingPeriod);
+                }
             }
-            rgb.r=Math.round(rgb.r*255);
-            rgb.g=Math.round(rgb.g*255);
-            rgb.b=Math.round(rgb.b*255);
+        });
+    }
+
+    function onCollectionHeaderClick() {
+        $('#stationSearch').focus();
+    }
+
+    function onStationSearch(e) {
+        var q = $('#stationSearch').val().toLocaleLowerCase();
+
+        var keyCode = (e === undefined ? false : e.keyCode);
+        if (keyCode && [13,32].indexOf(keyCode) != -1) {
+            // check if this leads somewhere
+            q = q.replace(/ /g,'');
+            var tagHash = Math.random().toString();
+            var searchTagHTML = '<div class="chip stationSearchTag" data-tag-hash="' + tagHash +'">' + q +
+                                '<i class="fa fa-times"></i></div>';
+            $('#searchTagContainer').append(searchTagHTML);
+            $(".stationSearchTag i").off().click(onSearchTagClick);
+            tags.push(q);
+            $('#stationSearch').val('');
         }
-        return rgb;
+        stationSearch();
+    }
+    function stationSearch() {
+        var q = $('#stationSearch').val().toLocaleLowerCase();
+        if (q === '' && tags.length === 0) {
+            $('.station-item').each(function(index, stationEl) {
+                $(stationEl).removeClass('stationHidden');
+            });
+            return;
+        }
+
+        $('.station-item').each(function(index, stationEl) {
+            var stationText = stationEl.text.toLocaleLowerCase();
+            // In future hold more info, like history of song names, artists...
+            var shouldStationBeHidden = true;
+            for (var tagId=0;tagId<tags.length;tagId++) {
+                var tag = tags[tagId];
+                if (stationText.indexOf(tag) != -1) {
+                    $(stationEl).removeClass('stationHidden');
+                    shouldStationBeHidden = false;
+                }
+            }
+            if (q.length > 0 && stationText.indexOf(q) != -1) {
+                $(stationEl).removeClass('stationHidden');
+                shouldStationBeHidden = false;
+            }
+            else if ($(stationEl).hasClass('active')) {
+                $(stationEl).removeClass('stationHidden');
+                shouldStationBeHidden = false;
+            }
+            else if (shouldStationBeHidden) {
+                $(stationEl).addClass('stationHidden');
+            }
+        });
     }
 
-    //Adding HueShift via Jacob (see comments)
-    function HueShift(h,s) { 
-        h+=s; while (h>=360.0) h-=360.0; while (h<0.0) h+=360.0; return h; 
-    }
-
-    //min max via Hairgami_Master (see comments)
-    function min3(a,b,c) { 
-        return (a<b)?((a<c)?a:c):((b<c)?b:c); 
-    } 
-    function max3(a,b,c) { 
-        return (a>b)?((a>c)?a:c):((b>c)?b:c); 
+    function onSearchTagClick() {
+        var tag = $(this.parentElement);
+        var tagId = -1;
+        $('.stationSearchTag').each(function(index, otherTag) {
+            otherTag = $(otherTag);
+            if (tag.data()['tagHash'] === otherTag.data()['tagHash']) {
+                tagId = index;
+            }
+        });
+        tag.remove();
+        tags.splice(tagId, 1);
+        stationSearch();
     }
 }

@@ -9,22 +9,23 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"  media="screen,projection"/>
 
+    <script src="/static/colorz.js"></script>
     <script src="/static/main.js"></script>
   </head>
 <body>
-    <div class="row">
-
-        <div class="col s12 m6">
+    <div class="row" id="mainContent">
+        <div class="col s12 m7">
             <div class="row" id="currentSongContainer">
-                <div class="col s12 m12 l9">
+                <div class="col s12 m12 l12">
                     <div class="card">
                         <div class="card-image">
-                            <img id="songCoverArt" src="{{cover_art_src}}">
+                            <canvas id="canvas" style="display: none;" width="200" height="200"></canvas>
+                            <img onclick="javascript:analyze(this);" id="songCoverArt" src="{{cover_art_src}}">
                         </div>
-                        <div class="card-content">
-                            <div class="flow-text" id="songArtist">{{artist}}</div>
-                            <div class="card-title" id="songTitle">{{title}}</div>
-                            <div class="flow-text" id="songAlbum">{{album}}</div>
+                        <div class="card-content flow-text">
+                            <div id="songArtist">{{artist}}</div>
+                            <div id="songTitle">{{title}}</div>
+                            <div id="songAlbum">{{album}}</div>
                         </div>
                         <div class="card-action">
                             <div id="controls" style="">
@@ -52,26 +53,27 @@
             </div>
         </div>
 
-        <div class="col s12 m6">
+        <div class="col s12 m5">
             <div id="stations" class="collection with-header">
                 <div class="collection-header">
-                    <div class="input-field">
-                        <input id="stationSearch" type="text" class="validate">
-                        <label for="stationSearch">Stations</label>
-                    </div>
+                        <h3 class="color-me">Stations</h3>
+                        <div id="searchTagContainer"></div>
+                        <input placeholder="filter" id="stationSearch" type="text">
                 </div>
+                <div id="stationitems">
                 {% for stationId, stationName in stations.iteritems() %}
-                <a class="collection-item station-item" data-station-id="{{stationId}}">
+                <a class="collection-item flow-text station-item" data-station-id="{{stationId}}">
                     {{stationName}}
                 </a>
                 {% endfor %}
+                </div>
             </div>
         </div>
 
     </div>
     <script>
     $(function() {
-        main({{current_station_id}})
+        main();
     });
     </script>
 </body>
