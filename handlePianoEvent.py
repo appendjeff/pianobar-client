@@ -16,7 +16,6 @@ if sys.argv[1] == 'songstart':
         except ValueError:
             pass
 
-
     img_src = event['coverArt']
     img_dir = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'static', 'img')
     # do k-means clustering to get top 3 colors
@@ -24,6 +23,3 @@ if sys.argv[1] == 'songstart':
 
     with open(settings.HISTORY_PATH, 'w') as f:
         f.write(json.dumps(event))
-
-    # enqueue .mp3 via youtube-dl
-    # dequeue oldest non-saved .mp3 -- unless n < 10

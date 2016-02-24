@@ -1,36 +1,37 @@
 'use strict'
 
 var globalStationId;
+var globalSong;
 var colorz = ['cornflowerblue', 'gray', 'aquamarine'];
 var tags = [];
-var tagCount = 0;
 
 function main(stationId) {
-    // Set initial state
+    /*
+     * Set initial state
+     */
     $.ajax({
         type: "POST",
         url: '/get_info',
         success: function(res) {
-            var song = JSON.parse(res);
-            globalStationId = song['current_station_id'];
+            globalSong = JSON.parse(res);
+            globalStationId = globalSong['current_station_id'];
             setActiveStation();
-            setSongCard(song);
+            setSongCard();
             longPolling({});
         }
     });
 
-
-    // Event delegation
+    /*
+     * Event delegation
+     */
     $('#play').click(onPlayBtn);
     $('#pause').click(onPauseBtn);
     $('#next').click(onNextBtn);
     $('#lowerVolume').click(onLowerVolumeBtn);
     $('#raiseVolume').click(onRaiseVolumeBtn);
-
     $('.station-item').click(onStationItem);
     $('.station-item:not(.active)').mouseenter(onStationMouseEnter) 
     $('.station-item:not(.active)').mouseleave(onStationMouseLeave);
-
     $('.collection-header').click(onCollectionHeaderClick);
     $('#stationSearch').on('keyup', onStationSearch);
     $('.stationSearchTag i').keyup(onSearchTagClick);
@@ -39,11 +40,12 @@ function main(stationId) {
      * Functions
      */
     function update(song) {
+        globalSong = song;
         if (song.current_station_id != globalStationId) {
             globalStationId = song.current_station_id;
             setActiveStation();
         }
-        setSongCard(song);
+        setSongCard();
     }
 
     function onPlayBtn() {
@@ -128,27 +130,28 @@ function main(stationId) {
         });
     };
 
-
-    function setSongCard(songObj) {
-        $('#songArtist').text(songObj.artist);
-        $('#songAlbum').text(songObj.album);
-        $('#songTitle').text(songObj.title);
-        $('#songCoverArt')[0].src = songObj.coverArt;
-
-        if ('colorz' in songObj)
-            colorz = songObj.colorz;
+    function setSongCard() {
+        $('#songArtist').text(globalSong.artist);
+        $('#songAlbum').text(globalSong.album);
+        $('#songTitle').text(globalSong.title);
+        $('#songCoverArt')[0].src = globalSong.coverArt;
+        if ('colorz' in globalSong)
+            colorz = globalSong.colorz;
         $('.card-content').css('background-color', colorz[0]);
         $('.card-content').css('color', colorz[2]);
         $('.ctrl-btn').css('background-color', colorz[1]);
         $('.ctrl-btn').css('color', colorz[0]);
         $('#songArtist').css('border-color', colorz[2]);
         $('#songAlbum').css('border-color', colorz[2]);
-
+        $('#songTitle').css('color', colorz[1]);
         $('a.collection-item.station-item').css('background-color', colorz[2]);
         $('a.collection-item.station-item').css('color', colorz[1]);
         $('a.collection-item.station-item.active').css('background-color', colorz[0]);
-
         $('.color-me').css('color', colorz[0]);
+        $('.color-me-back').css('background-color', colorz[0]);
+        $('body').css('background-color', colorz[2]);
+        $('.stationSearchTag').css('background-color', colorz[2]);
+        $('.stationSearchTag').css('color', colorz[0]);
     }
 
     function onStationMouseEnter() {
@@ -213,7 +216,6 @@ function main(stationId) {
 
     function onStationSearch(e) {
         var q = $('#stationSearch').val().toLocaleLowerCase();
-
         var keyCode = (e === undefined ? false : e.keyCode);
         if (keyCode && [13,32].indexOf(keyCode) != -1) {
             // check if this leads somewhere
@@ -225,10 +227,13 @@ function main(stationId) {
             $(".stationSearchTag i").off().click(onSearchTagClick);
             tags.push(q);
             $('#stationSearch').val('');
+            setSongCard();
         }
         stationSearch();
     }
+
     function stationSearch() {
+        // In future hold more info, like history of song names, artists...
         var q = $('#stationSearch').val().toLocaleLowerCase();
         if (q === '' && tags.length === 0) {
             $('.station-item').each(function(index, stationEl) {
@@ -236,10 +241,8 @@ function main(stationId) {
             });
             return;
         }
-
         $('.station-item').each(function(index, stationEl) {
             var stationText = stationEl.text.toLocaleLowerCase();
-            // In future hold more info, like history of song names, artists...
             var shouldStationBeHidden = true;
             for (var tagId=0;tagId<tags.length;tagId++) {
                 var tag = tags[tagId];
@@ -274,5 +277,6 @@ function main(stationId) {
         tag.remove();
         tags.splice(tagId, 1);
         stationSearch();
+        setSongCard();
     }
 }

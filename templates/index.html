@@ -14,6 +14,27 @@
   </head>
 <body>
     <div class="row" id="mainContent">
+        <div class="colorBar color-me-back valign-wrapper">
+                <div id="controls" class="valign">
+                        <div id="pause" class="ctrl-btn waves-effect waves-light btn">
+                            <i class="fa fa-pause"></i>
+                        </div>
+                        <div id="play" class="ctrl-btn waves-effect waves-light btn">
+                            <i class="fa fa-play"></i>
+                        </div>
+                        <div id="next" class="ctrl-btn waves-effect waves-light btn">
+                            <i class="fa fa-step-forward"></i>
+                        </div>
+                        <span class="ctrl-button-group">
+                            <div id="lowerVolume" class="ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-volume-down"></i>
+                            </div>
+                            <div id="raiseVolume" class="ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-volume-up"></i>
+                            </div>
+                        </span>
+                </div>
+        </div>
         <div class="col s12 m7">
             <div class="row" id="currentSongContainer">
                 <div class="col s12 m12 l12">
@@ -26,27 +47,6 @@
                             <div id="songArtist">{{artist}}</div>
                             <div id="songTitle">{{title}}</div>
                             <div id="songAlbum">{{album}}</div>
-                        </div>
-                        <div class="card-action">
-                            <div id="controls" style="">
-                                    <div id="pause" class="ctrl-btn waves-effect waves-light btn">
-                                        <i class="fa fa-pause"></i>
-                                    </div>
-                                    <div id="play" class="ctrl-btn waves-effect waves-light btn">
-                                        <i class="fa fa-play"></i>
-                                    </div>
-                                    <div id="next" class="ctrl-btn waves-effect waves-light btn">
-                                        <i class="fa fa-step-forward"></i>
-                                    </div>
-                                    <span class="ctrl-button-group">
-                                        <div id="lowerVolume" class="ctrl-btn waves-effect waves-light btn">
-                                            <i class="fa fa-volume-down"></i>
-                                        </div>
-                                        <div id="raiseVolume" class="ctrl-btn waves-effect waves-light btn">
-                                            <i class="fa fa-volume-up"></i>
-                                        </div>
-                                    </span>
-                            </div>
                         </div>
                     </div>
                 </div>

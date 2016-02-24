@@ -80,7 +80,7 @@ def kmeans(points, k, min_diff):
 
 def get_colors(image_url):
     remote_img = cStringIO.StringIO(urllib.urlopen(image_url).read())
-    return colorz(remote_img, n=10)
+    return colorz(remote_img, n=3)
 html = '''\
 <html>
     <head>

@@ -2,13 +2,21 @@
    div#mainContent {
        max-width:initial;
    }
+   div.colorBar{
+       max-width:initial;
+   }
+}
+
+.station-item {
+    padding: 4% 6% !important;
 }
 
 .stationHidden {
     visibility: hidden;
-    padding: 0px !important;
     height: 0px !important;
     margin: 0px;
+    margin-bottom: -1px !important;
+    padding: 0px !important;
 }
 
 .card-action {
@@ -26,28 +34,15 @@
 .input-field {
     margin: 30px !important;
 }
+
 input:focus{
     border-color: gray !important;
     box-shadow: none !important;
 }
 
-.station-item {
-    padding: 4% 6% !important;
-}
-
-.stationHidden {
-    /*
-     * For those things below active they should be 0 margin bottom
-     *
-    */
-    margin-bottom: -1px !important;
-    padding: 0px !important;
-}
-
-
 #songTitle {
     margin-top: 8px;
-    margin-bottom: 11px;
+    margin-bottom: 8px;
     text-align: center;
 }
 
@@ -61,7 +56,7 @@ input:focus{
 
 #songAlbum {
     border: solid;
-    padding: 5px;
+    padding: 20px;
     text-align: left;
     border-top: none;
     border-right: none;
@@ -79,7 +74,37 @@ input:focus{
 #mainContent {
     max-width: 1000px;
     background-color: white;
+    position: relative;
+    top: 100px;
 }
+
 body {
     background-color: #e7e7e7;
+}
+.colorBar {
+    width: 100%;
+    height: 100px;
+    text-align: center;
+    position: fixed;
+    top: 0;
+    background-color: rgb(216, 201, 197);
+    z-index: 30;
+    max-width: 1000px;
+}
+.stationSearchTag {
+    box-shadow:0 1px 4px 0 rgba(0,0,0,0.37);
+    margin-right: 6px;
+}
+.stationSearchTag:hover {
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2),0 6px 10px 0 rgba(0,0,0,0.3);
+}
+.stationSearchTag i:hover {
+    font-size: 18px;
+    position: relative;
+    top: 2px;
+}
+
+#controls {
+    margin: 0 auto;
+    padding-bottom: 8px;
 }
