@@ -77,11 +77,6 @@ def next():
 def get_info():
     return json.dumps(get_current_song())
 
-@app.route("/get_next_songs", methods=['GET', 'POST'])
-def get_next_songs():
-
-    return json.dumps(get_current_song())
-
 @app.route("/change_station/<station_id>", methods=['GET', 'POST'])
 def change_station(station_id):
     control.change_station(station_id)

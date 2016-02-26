@@ -10,38 +10,33 @@ class PianobarControl:
             fifo = path.join(path.expanduser('~'), '.config/pianobar/ctl')
         self.fifo = open(path.abspath(fifo), "w")
 
-    def play(self):
-        self.fifo.write("P\n")
+    def call(self, command):
+        self.fifo.write(''.join([command, '\n']))
         self.fifo.flush()
+
+    def play(self):
+        self.call("P")
 
     def pause(self):
-        self.fifo.write("S\n")
-        self.fifo.flush()
+        self.call("S")
 
     def stop(self):
-        self.fifo.write("q\n")
-        self.fifo.flush()
+        self.call("q")
 
     def next(self):
-        self.fifo.write("n\n")
-        self.fifo.flush()
+        self.call("n")
 
     def select(self, station_id=0):
-        self.fifo.write(str(station_id) + "\n")
-        self.fifo.flush()
+        self.call(str(station_id))
 
     def change_station(self, station_id):
-        self.fifo.write("s" + str(station_id) + "\n")
-        self.fifo.flush()
+        self.call("s" + str(station_id))
 
     def lower_volume(self):
-        self.fifo.write("(\n")
-        self.fifo.flush()
+        self.call("(")
 
     def raise_volume(self):
-        self.fifo.write(")\n")
-        self.fifo.flush()
+        self.call(")")
 
     def get_info(self):
-        self.fifo.write("i\n")
-        self.fifo.flush()
+        self.call("i")

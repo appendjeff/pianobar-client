@@ -81,39 +81,8 @@ def kmeans(points, k, min_diff):
 def get_colors(image_url):
     remote_img = cStringIO.StringIO(urllib.urlopen(image_url).read())
     return colorz(remote_img, n=3)
-html = '''\
-<html>
-    <head>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-        <style>
-            div {
-                margin: 10px;
-                height: 10px;
-            }
-        </style>
-    </head>
-    <body>
-        <script>
-
-        var colorz = ['#4c3537', '#5c5e88', '#c25340', '#d9c7be', '#aeb54f'];
-        var more_colors = ['#85719b', '#7ea063', '#d46235', '#983a30', '#cbab93', '#4f5386', '#ce5b5f', '#b5ba45', '#e1d5cc', '#403337'];
-        colorz.forEach(function(color) {
-            console.log(color);
-            $('body').append('<div style="background-color:'+color+';">thissss</div>');
-        });
-        
-        $('body').append('<div>SOMETHING</div>');
-        more_colors.forEach(function(color) {
-            $('body').append('<div style="background-color:'+color+';">thissss</div>');
-        });
-        </script>
-    </body>
-</html>
-'''
-
 
 if __name__ == '__main__':
-    image_url = 'http://cont-1.p-cdn.com/images/public/rovi/albumart/4/2/9/5/093624575924_500W_500H.jpg'
     image_url = 'http://cont-1.p-cdn.com/images/public/amz/5/7/6/1/900001675_500W_500H.jpg'
     print(get_colors(image_url))
 

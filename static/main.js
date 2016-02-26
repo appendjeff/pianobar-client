@@ -2,7 +2,7 @@
 
 var globalStationId;
 var globalSong;
-var colorz = ['cornflowerblue', 'gray', 'aquamarine'];
+var colorz = ['#000000', '#e7e7e7', '#ffffff'];
 var tags = [];
 
 function main(stationId) {
@@ -137,6 +137,12 @@ function main(stationId) {
         $('#songCoverArt')[0].src = globalSong.coverArt;
         if ('colorz' in globalSong)
             colorz = globalSong.colorz;
+        try {
+            colorz = sortByGrayScale(colorz);
+        }
+        catch(err) {
+            // currently sortByGrayScale only supports hex
+        }
         $('.card-content').css('background-color', colorz[0]);
         $('.card-content').css('color', colorz[2]);
         $('.ctrl-btn').css('background-color', colorz[1]);
@@ -216,10 +222,9 @@ function main(stationId) {
 
     function onStationSearch(e) {
         var q = $('#stationSearch').val().toLocaleLowerCase();
+        q = q.replace(/ /g,'');
         var keyCode = (e === undefined ? false : e.keyCode);
-        if (keyCode && [13,32].indexOf(keyCode) != -1) {
-            // check if this leads somewhere
-            q = q.replace(/ /g,'');
+        if (keyCode && [13,32].indexOf(keyCode) != -1 && q.length > 0) {
             var tagHash = Math.random().toString();
             var searchTagHTML = '<div class="chip stationSearchTag" data-tag-hash="' + tagHash +'">' + q +
                                 '<i class="fa fa-times"></i></div>';
@@ -228,6 +233,9 @@ function main(stationId) {
             tags.push(q);
             $('#stationSearch').val('');
             setSongCard();
+        }
+        else if (q.length <= 0) {
+            $('#stationSearch').val('');
         }
         stationSearch();
     }
@@ -278,5 +286,22 @@ function main(stationId) {
         tags.splice(tagId, 1);
         stationSearch();
         setSongCard();
+    }
+
+    function hexToGray(hex) {
+        // When ambitious, add function _toGray() for input not as hex
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return (parseInt(result[1], 16),parseInt(result[2], 16),parseInt(result[3], 16))/3
+    }
+
+    function sortByGrayScale(hexArr) {
+        var mappedColors = hexArr.map(function(hex) {
+            return {
+                gray: hexToGray(hex),
+                color: hex
+            };
+        });
+        mappedColors.sort(function(a, b){return a.gray-b.gray});
+        return mappedColors.map(function(x) {return x.color;});
     }
 }
