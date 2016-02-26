@@ -15,7 +15,7 @@ Besides pianobar, the requirments are python's Flask and Pillow. Once pianobar i
 pip install flask
 ```
 
-Then get [Pillow] from this source:
+(Optional - for cool dynamic theme) Then get [Pillow] from this source:
 https://pillow.readthedocs.org/en/3.0.0/installation.html
 
 Clone this repo to where it will be stored. On ubuntu I store it in ~/src
