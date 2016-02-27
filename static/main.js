@@ -5,6 +5,8 @@ var globalSong;
 var colorz = ['#000000', '#e7e7e7', '#ffffff'];
 var tags = [];
 
+var awesomplete; 
+
 function main(stationId) {
     /*
      * Set initial state
@@ -18,6 +20,18 @@ function main(stationId) {
             setActiveStation();
             setSongCard();
             longPolling({});
+
+            var awesomList = [];
+            for (var key in globalSong) {
+                if (key.search(/station\d/) != -1) {
+                    awesomList.push(globalSong[key]);
+                }
+            }
+            var searchInput = document.getElementById('stationSearch');
+            awesomplete = new Awesomplete(searchInput, {
+                minChars: 2,
+                list: awesomList
+            });
         }
     });
 
@@ -222,9 +236,15 @@ function main(stationId) {
 
     function onStationSearch(e) {
         var q = $('#stationSearch').val().toLocaleLowerCase();
-        q = q.replace(/ /g,'');
+        //q = q.replace(/ /g,'');
         var keyCode = (e === undefined ? false : e.keyCode);
-        if (keyCode && [13,32].indexOf(keyCode) != -1 && q.length > 0) {
+        if (q === ' ') {
+            $('#stationSearch').val('');
+            return;
+        }
+        else if (keyCode && [13].indexOf(keyCode) != -1 && q.length > 0) {
+            // Create a tag
+            awesomplete.close();
             var tagHash = Math.random().toString();
             var searchTagHTML = '<div class="chip stationSearchTag" data-tag-hash="' + tagHash +'">' + q +
                                 '<i class="fa fa-times"></i></div>';
