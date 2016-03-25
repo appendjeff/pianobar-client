@@ -63,7 +63,7 @@ input:focus{
 }
 
 #stationitems {
-    max-height: 400px;
+    height: 400px;
     overflow-y: auto;
 }
 
@@ -108,4 +108,9 @@ body {
 #controls {
     margin: 0 auto;
     padding-bottom: 8px;
+}
+#addStation {
+    position: absolute;
+    right: 20px;
+    bottom: 380px;
 }

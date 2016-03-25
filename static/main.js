@@ -157,21 +157,29 @@ function main(stationId) {
         catch(err) {
             // currently sortByGrayScale only supports hex
         }
+        setColors(colorz);
+
+    }
+    function setColors(colorz) {
+        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
+        $('.color-me-back').css('background-color', colorz[0]);
         $('.card-content').css('background-color', colorz[0]);
-        $('.card-content').css('color', colorz[2]);
-        $('.ctrl-btn').css('background-color', colorz[1]);
         $('.ctrl-btn').css('color', colorz[0]);
+        $('.color-me').css('color', colorz[0]);
+        $('.stationSearchTag').css('color', colorz[0]);
+        $('#addStation').attr('style', 'background-color:' + colorz[0] +' !important');
+
+        $('.ctrl-btn').css('background-color', colorz[1]);
+        $('#songTitle').css('color', colorz[1]);
+        $('a.collection-item.station-item').css('color', colorz[1]);
+        $('#addStationIcon').css('color', colorz[1]);
+
         $('#songArtist').css('border-color', colorz[2]);
         $('#songAlbum').css('border-color', colorz[2]);
-        $('#songTitle').css('color', colorz[1]);
         $('a.collection-item.station-item').css('background-color', colorz[2]);
-        $('a.collection-item.station-item').css('color', colorz[1]);
-        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
-        $('.color-me').css('color', colorz[0]);
-        $('.color-me-back').css('background-color', colorz[0]);
         $('body').css('background-color', colorz[2]);
         $('.stationSearchTag').css('background-color', colorz[2]);
-        $('.stationSearchTag').css('color', colorz[0]);
+        $('.card-content').css('color', colorz[2]);
     }
 
     function onStationMouseEnter() {

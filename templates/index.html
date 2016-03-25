@@ -64,6 +64,12 @@
                         <div id="searchTagContainer"></div>
                         <input placeholder="filter" id="stationSearch" type="text">
                 </div>
+                  <a id="addStation"
+                      class="btn-floating btn-large waves-effect waves-light red">
+                      <i id="addStationIcon"
+                          class="fa fa-plus" aria-hidden="true"></i>
+                  </a>
+
                 <div id="stationitems">
                 {% for stationId, stationName in stations.iteritems() %}
                 <a class="collection-item flow-text station-item" data-station-id="{{stationId}}">
