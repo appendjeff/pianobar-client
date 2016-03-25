@@ -1,6 +1,6 @@
 # Pianobar Client
 
-This software creates a web interface for [Pianobar]
+This software creates a web interface for [Pianobar]. The responsive material design makes it perfect to use on both your phone or your huge 27 inch monitor.
 
 
 ### Installation
