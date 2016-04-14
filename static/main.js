@@ -38,6 +38,7 @@ function main(stationId) {
     /*
      * Event delegation
      */
+    $('#changeColor').click(shuffleColorTheme)
     $('#play').click(onPlayBtn);
     $('#pause').click(onPauseBtn);
     $('#next').click(onNextBtn);
@@ -50,6 +51,7 @@ function main(stationId) {
     $('#stationSearch').on('keyup', onStationSearch);
     $('.stationSearchTag i').keyup(onSearchTagClick);
 
+
     /*
      * Functions
      */
@@ -60,6 +62,27 @@ function main(stationId) {
             setActiveStation();
         }
         setSongCard();
+    }
+
+    function shuffleColorTheme() {
+        function shuffle() {
+            var j, x, i;
+            for (i = colorz.length; i; i -= 1) {
+                j = Math.floor(Math.random() * i);
+                x = colorz[i - 1];
+                colorz[i - 1] = colorz[j];
+                colorz[j] = x;
+            }
+            return colorz;
+        }
+        var oldColorz = colorz.slice();
+        shuffle();
+        if (oldColorz !== colorz)
+            setColorz();
+        else {
+            console.log(oldColorz, colorz);
+            shuffleColorTheme();
+        }
     }
 
     function onPlayBtn() {
@@ -157,10 +180,10 @@ function main(stationId) {
         catch(err) {
             // currently sortByGrayScale only supports hex
         }
-        setColors(colorz);
+        setColorz();
 
     }
-    function setColors(colorz) {
+    function setColorz() {
         $('a.collection-item.station-item.active').css('background-color', colorz[0]);
         $('.color-me-back').css('background-color', colorz[0]);
         $('.card-content').css('background-color', colorz[0]);
@@ -188,6 +211,7 @@ function main(stationId) {
         $('.colorz-bc-0').css('background-color', colorz[0]);
         $('.colorz-bc-1').css('background-color', colorz[1]);
         $('.colorz-bc-2').css('background-color', colorz[2]);
+        return colorz;
     }
 
     function onStationMouseEnter() {

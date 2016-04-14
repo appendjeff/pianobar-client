@@ -13,6 +13,7 @@
     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"  media="screen,projection"/>
 
     <script src="/static/colorz.js"></script>
+    <script src="/static/easterEgg.js"></script>
     <script src="/static/main.js"></script>
     <script src="/static/lib/awesomplete.js"></script>
   </head>
@@ -21,6 +22,9 @@
     <div class="row" id="mainContent">
         <div class="colorBar color-me-back valign-wrapper">
                 <div id="controls" class="valign">
+                        <div id="changeColor" class="ctrl-btn waves-effect waves-light btn">
+                            <i class="fa fa-flask"></i>
+                        </div>
                         <div id="pause" class="ctrl-btn waves-effect waves-light btn">
                             <i class="fa fa-pause"></i>
                         </div>
@@ -73,18 +77,18 @@
                   </a>
                 <div id="addStationModal" class="modal colorz-bc-0">
                     <div class="modal-content">
-                      <h4 class="colorz-c-1">Add Station</h4>
+                      <h4 class="colorz-c-2">Add Station</h4>
                       <form>
                           <div id="chooseStationType">
-                              <input name="stationType" type="radio" id="addArtistRadio" checked />
-                              <label for="addArtistRadio">Artist</label>
-                              <input name="stationType" type="radio" id="addGenreRadio" />
-                              <label for="addGenreRadio">Genre</label>
+                              <input class="colorz-c-2"name="stationType" type="radio" id="addArtistRadio" checked />
+                              <label class="colorz-c-2" for="addArtistRadio">Artist</label>
+                              <input class="colorz-c-2"name="stationType" type="radio" id="addGenreRadio" />
+                              <label class="colorz-c-2" for="addGenreRadio">Genre</label>
                           </div>
                           <div class="row">
                               <div class="input-field col s6">
                                   <input id="addStationInput" type="text" class="validate colorz-c-2">
-                                  <label class="active" for="addStationInput">What to play...</label>
+                                  <label class="active colorz-c-2" for="addStationInput">What to play...</label>
                               </div>
                           </div>
                       </form>

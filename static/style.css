@@ -7,6 +7,11 @@
    }
 }
 
+#stations {
+    border-bottom-left-radius: 20px;
+    border-top-right-radius: 10px;
+}
+
 .station-item {
     padding: 4% 6% !important;
 }
@@ -111,6 +116,6 @@ body {
 }
 #addStation {
     position: absolute;
-    right: 20px;
+    right: 30px;
     bottom: 380px;
 }
