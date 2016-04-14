@@ -180,6 +180,14 @@ function main(stationId) {
         $('body').css('background-color', colorz[2]);
         $('.stationSearchTag').css('background-color', colorz[2]);
         $('.card-content').css('color', colorz[2]);
+
+        // Move to general form soon
+        $('.colorz-c-0').css('color', colorz[0]);
+        $('.colorz-c-1').css('color', colorz[1]);
+        $('.colorz-c-2').css('color', colorz[2]);
+        $('.colorz-bc-0').css('background-color', colorz[0]);
+        $('.colorz-bc-1').css('background-color', colorz[1]);
+        $('.colorz-bc-2').css('background-color', colorz[2]);
     }
 
     function onStationMouseEnter() {

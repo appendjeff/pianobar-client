@@ -17,6 +17,7 @@
     <script src="/static/lib/awesomplete.js"></script>
   </head>
 <body>
+
     <div class="row" id="mainContent">
         <div class="colorBar color-me-back valign-wrapper">
                 <div id="controls" class="valign">
@@ -64,11 +65,37 @@
                         <div id="searchTagContainer"></div>
                         <input placeholder="filter" id="stationSearch" type="text">
                 </div>
-                  <a id="addStation"
-                      class="btn-floating btn-large waves-effect waves-light red">
+                  <a id="addStation" class="btn-floating btn-large 
+                      waves-effect waves-light red btn modal-trigger"
+                      href="#addStationModal">
                       <i id="addStationIcon"
                           class="fa fa-plus" aria-hidden="true"></i>
                   </a>
+                <div id="addStationModal" class="modal colorz-bc-0">
+                    <div class="modal-content">
+                      <h4 class="colorz-c-1">Add Station</h4>
+                      <form>
+                          <div id="chooseStationType">
+                              <input name="stationType" type="radio" id="addArtistRadio" checked />
+                              <label for="addArtistRadio">Artist</label>
+                              <input name="stationType" type="radio" id="addGenreRadio" />
+                              <label for="addGenreRadio">Genre</label>
+                          </div>
+                          <div class="row">
+                              <div class="input-field col s6">
+                                  <input id="addStationInput" type="text" class="validate colorz-c-2">
+                                  <label class="active" for="addStationInput">What to play...</label>
+                              </div>
+                          </div>
+                      </form>
+                    </div>
+                    <div class="modal-footer colorz-bc-1">
+                      <a href="#!" class="modal-action modal-close 
+                          waves-effect waves-green btn-flat colorz-c-0">
+                          Finish
+                      </a>
+                    </div>
+                </div>
 
                 <div id="stationitems">
                 {% for stationId, stationName in stations.iteritems() %}
@@ -81,9 +108,12 @@
         </div>
 
     </div>
+
+
     <script>
     $(function() {
         main();
+        $('.modal-trigger').leanModal();
     });
     </script>
 </body>
