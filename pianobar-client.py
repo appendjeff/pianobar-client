@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+from subprocess import call
+from sys import platform as _platform
+
 from os import path
 import json
 from collections import OrderedDict
@@ -7,7 +10,7 @@ from collections import OrderedDict
 from flask import Flask, request, render_template
 
 import settings
-from pianobar_control import PianobarControl 
+from pianobar_control import PianobarControl
 
 app = Flask('Pianobar Client',
         template_folder=settings.ROOT_DIR+'/templates',
@@ -83,4 +86,11 @@ def change_station(station_id):
     return json.dumps(get_current_song())
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5067, debug=True)
+    url = 'http://localhost:5067/'
+    if _platform == "linux" or _platform == "linux2":
+        call(['xdg-open', url])
+    elif _platform == "darwin":
+        call(['open', url])
+    else:
+        print("Bill Gates sucks")
+    app.run(host='0.0.0.0', port=5067, debug=False)
