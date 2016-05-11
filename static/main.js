@@ -184,7 +184,6 @@ function main(stationId) {
 
     }
     function setColorz() {
-        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
         $('.color-me-back').css('background-color', colorz[0]);
         $('.card-content').css('background-color', colorz[0]);
         $('.ctrl-btn').css('color', colorz[0]);
@@ -211,6 +210,8 @@ function main(stationId) {
         $('.colorz-bc-0').css('background-color', colorz[0]);
         $('.colorz-bc-1').css('background-color', colorz[1]);
         $('.colorz-bc-2').css('background-color', colorz[2]);
+
+        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
         return colorz;
     }
 
