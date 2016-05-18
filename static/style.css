@@ -67,7 +67,7 @@ input:focus{
     border-right: none;
 }
 
-#stationitems {
+#stationItems {
     height: 400px;
     overflow-y: auto;
 }

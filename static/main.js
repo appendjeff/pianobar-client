@@ -33,25 +33,29 @@ function main(stationId) {
                 minChars: 2,
                 list: awesomList
             });
+            eventDelegation();
         }
     });
+
 
     /*
      * Event delegation
      */
-    $('body').keyup(onKeyPressUp);
-    $('#changeColor').click(shuffleColorTheme)
-    $('#play').click(onPlay);
-    $('#pause').click(onPause);
-    $('#next').click(onNext);
-    $('#lowerVolume').click(onLowerVolume);
-    $('#raiseVolume').click(onRaiseVolume);
-    $('.station-item').click(onStationItem);
-    $('.station-item:not(.active)').mouseenter(onStationMouseEnter) 
-    $('.station-item:not(.active)').mouseleave(onStationMouseLeave);
-    $('.collection-header').click(onCollectionHeaderClick);
-    $('#stationSearch').on('keyup', onStationSearch);
-    $('.stationSearchTag i').keyup(onSearchTagClick);
+    function eventDelegation() {
+      $('body').keyup(onKeyPressUp);
+      $('#changeColor').click(shuffleColorTheme)
+      $('#play').click(onPlay);
+      $('#pause').click(onPause);
+      $('#next').click(onNext);
+      $('#lowerVolume').click(onLowerVolume);
+      $('#raiseVolume').click(onRaiseVolume);
+      $('.station-item').click(onStationItem);
+      $('.station-item:not(.active)').mouseenter(onStationMouseEnter) 
+      $('.station-item:not(.active)').mouseleave(onStationMouseLeave);
+      $('.collection-header').click(onCollectionHeaderClick);
+      $('#stationSearch').on('keyup', onStationSearch);
+      $('.stationSearchTag i').keyup(onSearchTagClick);
+    }
 
 
     /*
@@ -273,6 +277,13 @@ function main(stationId) {
             url: '/get_info',
             success: function(res) {
                 var newSongObj = JSON.parse(res);
+
+                if (newSongObj.stationName != songObj.stationName) {
+                  setTimeout(function() {
+                    scrollToCurrentStation();
+                  }, 500);
+                }
+
                 if (newSongObj.title == songObj.title) {
                     setTimeout(function() {
                         longPolling(newSongObj);
@@ -381,5 +392,13 @@ function main(stationId) {
         });
         mappedColors.sort(function(a, b){return a.gray-b.gray});
         return mappedColors.map(function(x) {return x.color;});
+    }
+
+    function scrollToCurrentStation() {
+        var container = $('#stationItems');
+        var scrollTo = $('.active');
+        container.animate({
+              scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+        });
     }
 }
