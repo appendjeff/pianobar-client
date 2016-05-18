@@ -4,6 +4,7 @@ var globalStationId;
 var globalSong;
 var colorz = ['#000000', '#e7e7e7', '#ffffff'];
 var tags = [];
+var isPaused = false;
 
 var awesomplete; 
 
@@ -38,12 +39,13 @@ function main(stationId) {
     /*
      * Event delegation
      */
+    $('body').keyup(onKeyPressUp);
     $('#changeColor').click(shuffleColorTheme)
-    $('#play').click(onPlayBtn);
-    $('#pause').click(onPauseBtn);
-    $('#next').click(onNextBtn);
-    $('#lowerVolume').click(onLowerVolumeBtn);
-    $('#raiseVolume').click(onRaiseVolumeBtn);
+    $('#play').click(onPlay);
+    $('#pause').click(onPause);
+    $('#next').click(onNext);
+    $('#lowerVolume').click(onLowerVolume);
+    $('#raiseVolume').click(onRaiseVolume);
     $('.station-item').click(onStationItem);
     $('.station-item:not(.active)').mouseenter(onStationMouseEnter) 
     $('.station-item:not(.active)').mouseleave(onStationMouseLeave);
@@ -62,6 +64,18 @@ function main(stationId) {
             setActiveStation();
         }
         setSongCard();
+    }
+
+    function onKeyPressUp(el) {
+      if (event.target.tagName === 'INPUT') {
+        return false;
+      }
+      if (el.keyCode == 75) {
+          (isPaused ? onPlay() : onPause());
+          isPaused = !isPaused
+      }
+      if (el.keyCode == 76)
+          onNext();
     }
 
     function shuffleColorTheme() {
@@ -85,28 +99,30 @@ function main(stationId) {
         }
     }
 
-    function onPlayBtn() {
+    function onPlay() {
         $.ajax({
             type: "POST",
             url: '/play',
             success: function(res) {
+                isPaused = false;
                 update(JSON.parse(res))
                 Materialize.toast('playing', 2000);
             }
         });
     };
 
-    function onPauseBtn() {
+    function onPause() {
         $.ajax({
             type: "POST",
             url: '/pause',
             success: function(res) {
+                isPaused = true;
                 Materialize.toast('paused', 2000)
             }
         });
     };
 
-    function onNextBtn() {
+    function onNext() {
         $.ajax({
             type: "POST",
             url: '/next',
@@ -118,7 +134,7 @@ function main(stationId) {
         });
     };
 
-    function onLowerVolumeBtn() {
+    function onLowerVolume() {
         $.ajax({
             type: "POST",
             url: '/lower_volume',
@@ -128,7 +144,7 @@ function main(stationId) {
         });
     };
 
-    function onRaiseVolumeBtn() {
+    function onRaiseVolume() {
         $.ajax({
             type: "POST",
             url: '/raise_volume',
@@ -183,8 +199,8 @@ function main(stationId) {
         setColorz();
 
     }
+
     function setColorz() {
-        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
         $('.color-me-back').css('background-color', colorz[0]);
         $('.card-content').css('background-color', colorz[0]);
         $('.ctrl-btn').css('color', colorz[0]);
@@ -211,6 +227,8 @@ function main(stationId) {
         $('.colorz-bc-0').css('background-color', colorz[0]);
         $('.colorz-bc-1').css('background-color', colorz[1]);
         $('.colorz-bc-2').css('background-color', colorz[2]);
+
+        $('a.collection-item.station-item.active').css('background-color', colorz[0]);
         return colorz;
     }
 
