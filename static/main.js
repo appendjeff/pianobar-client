@@ -55,6 +55,7 @@ function main(stationId) {
       $('.collection-header').click(onCollectionHeaderClick);
       $('#stationSearch').on('keyup', onStationSearch);
       $('.stationSearchTag i').keyup(onSearchTagClick);
+      $('#currentSongContainer').mouseenter(scrollToCurrentStation);
     }
 
 
@@ -109,7 +110,6 @@ function main(stationId) {
             url: '/play',
             success: function(res) {
                 isPaused = false;
-                update(JSON.parse(res))
                 Materialize.toast('playing', 2000);
             }
         });
@@ -210,12 +210,12 @@ function main(stationId) {
         $('.ctrl-btn').css('color', colorz[0]);
         $('.color-me').css('color', colorz[0]);
         $('.stationSearchTag').css('color', colorz[0]);
-        $('#addStation').attr('style', 'background-color:' + colorz[0] +' !important');
+        $('#addStationIcon').css('color', colorz[0]);
 
         $('.ctrl-btn').css('background-color', colorz[1]);
         $('#songTitle').css('color', colorz[1]);
         $('a.collection-item.station-item').css('color', colorz[1]);
-        $('#addStationIcon').css('color', colorz[1]);
+        $('#addStation').attr('style', 'background-color:' + colorz[1] +' !important');
 
         $('#songArtist').css('border-color', colorz[2]);
         $('#songAlbum').css('border-color', colorz[2]);
@@ -321,7 +321,6 @@ function main(stationId) {
             $(".stationSearchTag i").off().click(onSearchTagClick);
             tags.push(q);
             $('#stationSearch').val('');
-            setSongCard();
         }
         else if (q.length <= 0) {
             $('#stationSearch').val('');
@@ -374,7 +373,9 @@ function main(stationId) {
         tag.remove();
         tags.splice(tagId, 1);
         stationSearch();
-        setSongCard();
+        setTimeout(function() {
+          scrollToCurrentStation();
+        }, 300);
     }
 
     function hexToGray(hex) {
