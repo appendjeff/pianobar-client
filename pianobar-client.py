@@ -86,11 +86,11 @@ def change_station(station_id):
     return json.dumps(get_current_song())
 
 if __name__ == "__main__":
-    url = 'http://localhost:5067/'
+    url = '%s://%s:%d/'%(settings.PROTOCOL, settings.DOMAIN, settings.PORT)
     if _platform == "linux" or _platform == "linux2":
         call(['xdg-open', url])
     elif _platform == "darwin":
         call(['open', url])
     else:
         print("Bill Gates sucks")
-    app.run(host='0.0.0.0', port=5067, debug=False)
+    app.run(host=settings.DOMAIN, port=settings.PORT, debug=False)
