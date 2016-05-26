@@ -3,18 +3,23 @@
     <title>Pianobar Client</title>
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, height=device-height, target-densitydpi=device-dpi">
 
-    <link rel="stylesheet" type="text/css" href="/static/lib/awesomplete.css">
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
-
+    <!-- External CSS Styles -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script><style type="text/css"></style>
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"  media="screen,projection"/>
 
+    <!-- Internal CSS Styles -->
+    <link rel="stylesheet" type="text/css" href="/static/style.css">
+
+    <!-- External Javscript Libraries -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="/static/lib/fuse.min.js"></script>
+
+    <!-- Internal Javscript Libraries -->
     <script src="/static/easterEgg.js"></script>
     <script src="/static/main.js"></script>
-    <script src="/static/lib/awesomplete.js"></script>
+
   </head>
 <body>
 
@@ -114,6 +119,21 @@
 
     <script>
     $(function() {
+
+        // In a non-lazy future, use the API and parse that damn shiz
+        window.stations = [];
+        {% for stationId, stationName in stations.iteritems() %}
+          window.stations.push({
+            "stationName": "{{stationName}}",
+            "id": {{stationId}}
+          });
+        {% endfor %}
+        var options = {
+            keys: ['stationName'],
+            threshold: 0.3,
+        }
+        window.fuse = new Fuse(window.stations, options);
+
         main();
         $('.modal-trigger').leanModal();
     });
