@@ -6,8 +6,6 @@ var colorz = ['#000000', '#e7e7e7', '#ffffff'];
 var tags = [];
 var isPaused = false;
 
-var awesomplete; 
-
 function main(stationId) {
     /*
      * Set initial state
@@ -29,10 +27,6 @@ function main(stationId) {
                 }
             }
             var searchInput = document.getElementById('stationSearch');
-            awesomplete = new Awesomplete(searchInput, {
-                minChars: 2,
-                list: awesomList
-            });
             eventDelegation();
         }
     });
@@ -99,7 +93,6 @@ function main(stationId) {
         if (oldColorz !== colorz)
             setColorz();
         else {
-            console.log(oldColorz, colorz);
             shuffleColorTheme();
         }
     }
@@ -313,7 +306,6 @@ function main(stationId) {
         }
         else if (keyCode && [13].indexOf(keyCode) != -1 && q.length > 0) {
             // Create a tag
-            awesomplete.close();
             var tagHash = Math.random().toString();
             var searchTagHTML = '<div class="chip stationSearchTag" data-tag-hash="' + tagHash +'">' + q +
                                 '<i class="fa fa-times"></i></div>';
@@ -329,8 +321,12 @@ function main(stationId) {
     }
 
     function stationSearch() {
-        // In future hold more info, like history of song names, artists...
-        var q = $('#stationSearch').val().toLocaleLowerCase();
+        var q = $('#stationSearch').val();
+
+        var matchedStationIds = _.map(window.fuse.search(q), function(x) {
+          return x.id;
+        })
+
         if (q === '' && tags.length === 0) {
             $('.station-item').each(function(index, stationEl) {
                 $(stationEl).removeClass('stationHidden');
@@ -342,12 +338,14 @@ function main(stationId) {
             var shouldStationBeHidden = true;
             for (var tagId=0;tagId<tags.length;tagId++) {
                 var tag = tags[tagId];
+                // Tags are exact searches for now - should prob move to fuse
                 if (stationText.indexOf(tag) != -1) {
                     $(stationEl).removeClass('stationHidden');
                     shouldStationBeHidden = false;
                 }
             }
-            if (q.length > 0 && stationText.indexOf(q) != -1) {
+            //if (q.length > 0 && stationText.indexOf(q) != -1) {
+            if (q.length > 0 && matchedStationIds.indexOf(index)!= -1) {
                 $(stationEl).removeClass('stationHidden');
                 shouldStationBeHidden = false;
             }
