@@ -4,31 +4,24 @@ This software creates a web interface for [Pianobar]. The responsive material de
 
 
 ### Installation
-Get yourself [pianobar], if you haven't already. Make sure that pianobar is running.
+Get yourself [pianobar], if you haven't already. Make sure that pianobar is running and that you can login to you pandora account.
 ```sh
 pianobar
 ```
 
-Besides pianobar, the requirments are python's Flask and Pillow. Once pianobar is running smoothly Flask must be installed.
-
+Clone this repo and install the python requirements.
 ```sh
-pip install flask
-```
-
-(Optional - for cool dynamic theme) Then get [Pillow] from this source:
-https://pillow.readthedocs.org/en/3.0.0/installation.html
-
-Clone this repo to where it will be stored. On ubuntu I store it in ~/src
-```sh
-cd path/to/repo/pwd
 git clone https://github.com/appendjeff/pianobar-client.git
 cd pianobar-client
+pip install -r requirements.txt
 ```
+
 Pianobar writes to a config file on certain events. Let's tell pianobar where the repo is stored.
 ```sh
 touch ~/.config/pianobar/config
-echo "event_command = path/to/repo/pianobar-client/handlePianoEvent.py" >> ~/.config/pianobar/config
+echo "event_command = path/to/cloned/repo/pianobar-client/handlePianoEvent.py" >> ~/.config/pianobar/config
 ```
+
 That should about do it. Now run the following two processes in seperate terminal windows.
 ```sh
 pianobar
@@ -43,8 +36,9 @@ This pianobar client uses a couple of open source projects to work properly:
 
 * [Pianobar] - console client for the web radio Pandora.
 * [Flask] - web microframework for python.
+* [Pillow] - python image libary for the dynamic color themes based on cover art
+* [Materialize]- Material design library
 * [jQuery] - fast, small, and feature-rich JavaScript library.
-* [Pillow] - python image libary
 
 And of course this pianobar client itself is open source.
 
@@ -67,5 +61,5 @@ MIT
    [jQuery]: <http://jquery.com>
    [Flask]: <http://flask.pocoo.org/>
    [Pillow]: <https://pillow.readthedocs.org/en/3.0.0/index.html>
-
+   [Materialize]: <http://materializecss.com/>
 
