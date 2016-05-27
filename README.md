@@ -1,6 +1,6 @@
 # Pianobar Client
 
-This is a web app enjoy control pandora via [Pianobar]. The responsive material design makes it perfect to use on both your phone or your huge 27 inch monitor.
+This is a web app to control pandora via [Pianobar]. The responsive material design makes it perfect to use on both your phone or your huge 27 inch monitor.
 
 ### Installation
 Get yourself [pianobar], if you haven't already. Make sure that pianobar is running and that you can login to you pandora account.
