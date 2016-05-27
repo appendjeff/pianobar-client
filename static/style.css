@@ -7,6 +7,10 @@
    }
 }
 
+.hidden {
+    visibility: hidden;
+}
+
 #stations {
     border-bottom-left-radius: 20px;
     border-top-right-radius: 10px;
@@ -118,4 +122,22 @@ body {
     position: absolute;
     right: 37px;
     bottom: 370px;
+}
+
+#dumpImage {
+    color: rgba(128, 128, 128, 0.4);
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    z-index: 50;
+    font-size: 20px;
+    cursor: pointer; 
+    cursor: hand;
+}
+
+#dumpImage:hover {
+    top: 13px;
+    left: 19px;
+    color: rgba(128, 128, 128, 1);
+    font-size: 25px;
 }

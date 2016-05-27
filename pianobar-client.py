@@ -12,6 +12,9 @@ from flask import Flask, request, render_template
 import settings
 from pianobar_control import PianobarControl
 
+from colors import get_colors as get_img_url_colors
+from get_wiki_data import get_first_p
+
 app = Flask('Pianobar Client',
         template_folder=settings.ROOT_DIR+'/templates',
         static_folder=settings.ROOT_DIR+ '/static')
@@ -48,7 +51,7 @@ def root():
             album=current_song['album'],
             title=current_song['title'],
             stations=current_song['stations'],
-            current_station_id=current_song['current_station_id']
+            current_station_id=current_song['current_station_id'],
             )
 
 @app.route("/play", methods=['GET', 'POST'])
@@ -85,12 +88,29 @@ def change_station(station_id):
     control.change_station(station_id)
     return json.dumps(get_current_song())
 
+@app.route("/get_colors", methods=['GET', 'POST'])
+def get_colors():
+    img_url = request.json['imgUrl']
+    colorz = get_img_url_colors(img_url)
+    return json.dumps({'colorz': colorz})
+
+@app.route("/artist_info", methods=['GET', 'POST'])
+def get_artist_info():
+    current_song = get_current_song()
+    artist = current_song['artist']
+    p_tag = get_first_p(artist)
+    return json.dumps({
+        'p_tag': p_tag,
+        'artist': artist
+        })
+
 if __name__ == "__main__":
     url = '%s://%s:%d/'%(settings.PROTOCOL, settings.DOMAIN, settings.PORT)
-    if _platform == "linux" or _platform == "linux2":
+    OPEN = False
+    if OPEN and (_platform == "linux" or _platform == "linux2"):
         call(['xdg-open', url])
-    elif _platform == "darwin":
+    elif OPEN and _platform == "darwin":
         call(['open', url])
-    else:
+    elif OPEN:
         print("Bill Gates sucks")
-    app.run(host=settings.DOMAIN, port=settings.PORT, debug=False)
+    app.run(host=settings.DOMAIN, port=settings.PORT, debug=True)
