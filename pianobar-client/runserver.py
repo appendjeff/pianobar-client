@@ -106,11 +106,11 @@ def get_artist_info():
 
 if __name__ == "__main__":
     url = '%s://%s:%d/'%(settings.PROTOCOL, settings.DOMAIN, settings.PORT)
-    OPEN = False
+    OPEN = True
     if OPEN and (_platform == "linux" or _platform == "linux2"):
         call(['xdg-open', url])
     elif OPEN and _platform == "darwin":
         call(['open', url])
     elif OPEN:
         print("Bill Gates sucks")
-    app.run(host=settings.DOMAIN, port=settings.PORT, debug=True)
+    app.run(host=settings.DOMAIN, port=settings.PORT, debug=False)

@@ -1,7 +1,6 @@
 # Pianobar Client
 
-This software creates a web interface for [Pianobar]. The responsive material design makes it perfect to use on both your phone or your huge 27 inch monitor.
-
+This is a web app enjoy control pandora via [Pianobar]. The responsive material design makes it perfect to use on both your phone or your huge 27 inch monitor.
 
 ### Installation
 Get yourself [pianobar], if you haven't already. Make sure that pianobar is running and that you can login to you pandora account.
@@ -9,17 +8,11 @@ Get yourself [pianobar], if you haven't already. Make sure that pianobar is runn
 pianobar
 ```
 
-Clone this repo and install the python requirements.
+Clone this repo and run the install script.
 ```sh
 git clone https://github.com/appendjeff/pianobar-client.git
 cd pianobar-client
-pip install -r requirements.txt
-```
-
-Pianobar writes to a config file on certain events. Let's tell pianobar where the repo is stored.
-```sh
-touch ~/.config/pianobar/config
-echo "event_command = path/to/cloned/repo/pianobar-client/handlePianoEvent.py" >> ~/.config/pianobar/config
+./bin/runme.sh
 ```
 
 That should about do it. Now run the following two processes in seperate terminal windows.
@@ -27,7 +20,7 @@ That should about do it. Now run the following two processes in seperate termina
 pianobar
 ```
 ```sh
-path/to/repo/pianobar-client.py
+./pianobar-client/runserver.py
 ```
 
 ### Tech
