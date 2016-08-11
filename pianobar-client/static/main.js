@@ -5,6 +5,9 @@ var globalSong;
 var colorz = ['#000000', '#e7e7e7', '#ffffff'];
 var tags = [];
 var isPaused = false;
+var lastArtistLookup = 'Not Bob Dylan'
+var oldBorder = {};
+
 
 function main(stationId) {
     /*
@@ -44,12 +47,17 @@ function main(stationId) {
       $('#lowerVolume').click(onLowerVolume);
       $('#raiseVolume').click(onRaiseVolume);
       $('.station-item').click(onStationItem);
-      $('.station-item:not(.active)').mouseenter(onStationMouseEnter) 
+      $('.station-item:not(.active)').mouseenter(onStationMouseEnter);
       $('.station-item:not(.active)').mouseleave(onStationMouseLeave);
       $('.collection-header').click(onCollectionHeaderClick);
       $('#stationSearch').on('keyup', onStationSearch);
       $('.stationSearchTag i').keyup(onSearchTagClick);
       $('#currentSongContainer').mouseenter(scrollToCurrentStation);
+      $('#dumpImage').click(onDumpImage);
+      $('#coverArtContainer').hover(onCoverArtIn, onCoverArtOut);
+
+      $('.card-content').hover(onCardContentIn, onCardContentOut);
+      $('.card-content').click(onCardContent)
     }
 
 
@@ -194,12 +202,11 @@ function main(stationId) {
             // currently sortByGrayScale only supports hex
         }
         setColorz();
-
     }
 
     function setColorz() {
         $('.color-me-back').css('background-color', colorz[0]);
-        $('.card-content').css('background-color', colorz[0]);
+        $('.card .card-content').css('background-color', colorz[0]);
         $('.ctrl-btn').css('color', colorz[0]);
         $('.color-me').css('color', colorz[0]);
         $('.stationSearchTag').css('color', colorz[0]);
@@ -210,12 +217,11 @@ function main(stationId) {
         $('a.collection-item.station-item').css('color', colorz[1]);
         $('#addStation').attr('style', 'background-color:' + colorz[1] +' !important');
 
-        $('#songArtist').css('border-color', colorz[2]);
-        $('#songAlbum').css('border-color', colorz[2]);
+        $('.cardContentBorder').css('border-color', colorz[2]);
         $('a.collection-item.station-item').css('background-color', colorz[2]);
         $('body').css('background-color', colorz[2]);
         $('.stationSearchTag').css('background-color', colorz[2]);
-        $('.card-content').css('color', colorz[2]);
+        $('.card .card-content').css('color', colorz[2]);
 
         // Move to general form soon
         $('.colorz-c-0').css('color', colorz[0]);
@@ -270,7 +276,6 @@ function main(stationId) {
             url: '/get_info',
             success: function(res) {
                 var newSongObj = JSON.parse(res);
-
                 if (newSongObj.stationName != songObj.stationName) {
                   setTimeout(function() {
                     scrollToCurrentStation();
@@ -399,5 +404,129 @@ function main(stationId) {
         container.animate({
               scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
         });
+    }
+
+    function getNewImgUrl() {
+      var staticImages = [
+        'http://img0.ndsstatic.com/wallpapers/04dbf37c754695d278e606de4849d1a7_large.jpeg',
+        //'http://richestcelebrities.org/wp-content/uploads/2014/09/Bob-Dylan-Net-Worth.jpg',
+        'http://wordsinthebucket.com/wp-content/uploads/2015/02/Bob-Dylan-Like-a-Rolling-Stone.jpg',
+        'http://cps-static.rovicorp.com/3/JPG_400/MI0003/995/MI0003995354.jpg?partner=allrovi.com',
+        'http://www.mybeatlescollection.com/images/asknat/beatles69.jpg',
+        'http://images5.fanpop.com/image/photos/30100000/CCR-creedence-clearwater-revival-30167437-464-472.jpg',
+        'http://www.blogcdn.com/www.joystiq.com/media/2009/03/ccr4whowillstoprain.jpg'
+      ];
+      return staticImages[Math.floor(Math.random() * staticImages.length)];
+    }
+
+    function onDumpImage() {
+      // Set height of container
+      var height = $('#coverArtContainer').height();
+      $('#coverArtContainer').css('min-height', height + 'px');
+      var secondCleanup = 0;
+      function cleanUp() {
+        secondCleanup++;
+        if (secondCleanup === 2) {
+          $('#coverArtContainer').css('min-height', '0px');
+        }
+      } 
+
+      var initialWidth = $('#songCoverArt').width()
+      var dmpImgPos = $('#dumpImage').position();
+
+      var newImgUrl = getNewImgUrl();
+      $.ajax({
+        type: "POST",
+        contentType: "application/json; charset=utf-8",
+        url: "/get_colors",
+        data: JSON.stringify({imgUrl: newImgUrl}),
+        success: function (data) {
+          colorz = data.colorz;
+          setColorz();
+        },
+        dataType: "json"
+      });
+
+      var img = new Image();
+      img.onload = function() {
+        cleanUp();
+      }
+      img.src = newImgUrl;
+
+      $("#songCoverArt").animate({
+          top: dmpImgPos.top + "px",
+          left: dmpImgPos.left + "px",
+          width: "3px",
+          opacity: .1
+      }, 1000, function() {
+        $("#songCoverArt").attr("src", '');
+        $("#songCoverArt").attr("src", newImgUrl);
+        $("#songCoverArt").animate({
+            top: "0px",
+            left: "9px",
+            width: "97%",
+            opacity: .2
+        }, 50, function() {
+          cleanUp();
+          $("#songCoverArt").animate({
+            left: "0px",
+            opacity: 1,
+            width: "100%",
+          }, 800);
+        });
+      });
+    }
+
+    function onCoverArtIn() {
+      $('#dumpImage').removeClass('hidden');
+    }
+
+    function onCoverArtOut() {
+      $('#dumpImage').addClass('hidden');
+    }
+
+    function onCardContentIn() {
+        // Follow colors from 
+        if (!oldBorder.padding) {
+            oldBorder.padding = $('.cardContentBorder').css('padding');
+            oldBorder.borderWidth= $('.cardContentBorder').css('border-top-width');
+        }
+        console.log(oldBorder);
+        var newPadding = parseInt(oldBorder.padding) - parseInt(oldBorder.borderWidth);
+        $('.cardContentBorder').animate({
+            'padding': newPadding + 'px',
+            'border-width': 0
+        }, 300);
+        $('.card .card-content').css('color', colorz[0]);
+    }
+    function onCardContentOut() {
+        console.log(oldBorder);
+        $('.cardContentBorder').animate({
+            'padding': oldBorder.paddding,
+            'border-width': oldBorder.borderWidth
+        }, 300);
+        $('.card .card-content').css('color', colorz[2]);
+    }
+
+    function onCardContent() {
+      function onArtistInfo() {
+          var artistInfoLength = $('#artistInfoText').html().length;
+          if (artistInfoLength < 150) {
+            return false;
+          }
+          $('#artistInfoModal').openModal();
+      }
+      if (lastArtistLookup !== globalSong.artist) {
+        $.get('/artist_info', function(data) {
+          data = JSON.parse(data)
+          $('#artistInfoText').html(data.p_tag);
+          $('#artistInfoName').html(data.artist + ' is cool');
+          onArtistInfo();
+        })
+      }
+      else {
+          onArtistInfo();
+      }
+      lastArtistLookup = globalSong.artist;
     }
 }

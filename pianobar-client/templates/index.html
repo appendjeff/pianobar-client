@@ -17,7 +17,6 @@
     <script src="/static/lib/fuse.min.js"></script>
 
     <!-- Internal Javscript Libraries -->
-    <script src="/static/easterEgg.js"></script>
     <script src="/static/main.js"></script>
 
   </head>
@@ -52,13 +51,16 @@
             <div class="row" id="currentSongContainer">
                 <div class="col s12 m12 l12">
                     <div class="card">
-                        <div class="card-image">
+                        <div id="coverArtContainer" class="card-image colorz-bc-0">
+                            <div id="dumpImage" class="hidden">
+                              <i class="fa fa-trash-o" aria-hidden="true"></i>
+                            </div>
                             <img id="songCoverArt" src="{{cover_art_src}}">
                         </div>
                         <div class="card-content flow-text">
-                            <div id="songArtist">{{artist}}</div>
+                            <div id="songArtist" class="cardContentBorder">{{artist}}</div>
                             <div id="songTitle">{{title}}</div>
-                            <div id="songAlbum">{{album}}</div>
+                            <div id="songAlbum" class="cardContentBorder">{{album}}</div>
                         </div>
                     </div>
                 </div>
@@ -100,6 +102,21 @@
                       <a href="#!" class="modal-action modal-close 
                           waves-effect waves-green btn-flat colorz-c-0">
                           Finish
+                      </a>
+                    </div>
+                </div>
+
+                <div id="artistInfoModal" class="modal colorz-bc-0">
+                    <div class="modal-content">
+                      <div id="artistInfoText" class="row"></div>
+                      <br><div class="row"><p>Make cool interative wiki browser.</p><ul>
+                          <li>On album hoer show thumbnail of the album cover art.. perhaps with option to update the main cover art fo rthe view</li>
+                        </ul></div>
+                    </div>
+                    <div class="modal-footer colorz-bc-1">
+                      <a href="#!" class="modal-action modal-close 
+                      waves-effect waves-green btn-flat colorz-c-0">
+                        <span id="artistInfoName"></span>
                       </a>
                     </div>
                 </div>
