@@ -6,6 +6,8 @@ var colorz = ['#000000', '#e7e7e7', '#ffffff'];
 var tags = [];
 var isPaused = false;
 var lastArtistLookup = 'Not Bob Dylan'
+var oldBorder = {};
+
 
 function main(stationId) {
     /*
@@ -45,7 +47,7 @@ function main(stationId) {
       $('#lowerVolume').click(onLowerVolume);
       $('#raiseVolume').click(onRaiseVolume);
       $('.station-item').click(onStationItem);
-      $('.station-item:not(.active)').mouseenter(onStationMouseEnter) 
+      $('.station-item:not(.active)').mouseenter(onStationMouseEnter);
       $('.station-item:not(.active)').mouseleave(onStationMouseLeave);
       $('.collection-header').click(onCollectionHeaderClick);
       $('#stationSearch').on('keyup', onStationSearch);
@@ -54,6 +56,7 @@ function main(stationId) {
       $('#dumpImage').click(onDumpImage);
       $('#coverArtContainer').hover(onCoverArtIn, onCoverArtOut);
 
+      $('.card-content').hover(onCardContentIn, onCardContentOut);
       $('.card-content').click(onCardContent)
     }
 
@@ -203,7 +206,7 @@ function main(stationId) {
 
     function setColorz() {
         $('.color-me-back').css('background-color', colorz[0]);
-        $('.card-content').css('background-color', colorz[0]);
+        $('.card .card-content').css('background-color', colorz[0]);
         $('.ctrl-btn').css('color', colorz[0]);
         $('.color-me').css('color', colorz[0]);
         $('.stationSearchTag').css('color', colorz[0]);
@@ -214,12 +217,11 @@ function main(stationId) {
         $('a.collection-item.station-item').css('color', colorz[1]);
         $('#addStation').attr('style', 'background-color:' + colorz[1] +' !important');
 
-        $('#songArtist').css('border-color', colorz[2]);
-        $('#songAlbum').css('border-color', colorz[2]);
+        $('.cardContentBorder').css('border-color', colorz[2]);
         $('a.collection-item.station-item').css('background-color', colorz[2]);
         $('body').css('background-color', colorz[2]);
         $('.stationSearchTag').css('background-color', colorz[2]);
-        $('.card-content').css('color', colorz[2]);
+        $('.card .card-content').css('color', colorz[2]);
 
         // Move to general form soon
         $('.colorz-c-0').css('color', colorz[0]);
@@ -481,6 +483,29 @@ function main(stationId) {
 
     function onCoverArtOut() {
       $('#dumpImage').addClass('hidden');
+    }
+
+    function onCardContentIn() {
+        // Follow colors from 
+        if (!oldBorder.padding) {
+            oldBorder.padding = $('.cardContentBorder').css('padding');
+            oldBorder.borderWidth= $('.cardContentBorder').css('border-top-width');
+        }
+        console.log(oldBorder);
+        var newPadding = parseInt(oldBorder.padding) - parseInt(oldBorder.borderWidth);
+        $('.cardContentBorder').animate({
+            'padding': newPadding + 'px',
+            'border-width': 0
+        }, 300);
+        $('.card .card-content').css('color', colorz[0]);
+    }
+    function onCardContentOut() {
+        console.log(oldBorder);
+        $('.cardContentBorder').animate({
+            'padding': oldBorder.paddding,
+            'border-width': oldBorder.borderWidth
+        }, 300);
+        $('.card .card-content').css('color', colorz[2]);
     }
 
     function onCardContent() {
