@@ -1,6 +1,8 @@
 # Pianobar Client
 
-This is a web app to control pandora via [Pianobar]. The responsive material design makes it perfect to use on both your phone or your huge 27 inch monitor.
+This is a web client to further enjoy [Pianobar]. The responsive material design makes it perfect to use on both your phone or your huge 27 inch monitor. It also uses clustering to make the color theme dynamically based off of the cover art image.
+
+![Eric Clapton](https://raw.githubusercontent.com/appendjeff/pianobar-client/master/pianobar-client/static/images/examples/clapton.png)
 
 ### Installation
 Get yourself [pianobar], if you haven't already. Make sure that pianobar is running and that you can login to you pandora account.
