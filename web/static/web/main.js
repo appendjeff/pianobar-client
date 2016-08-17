@@ -14,10 +14,10 @@ function main(stationId) {
      * Set initial state
      */
     $.ajax({
-        type: "POST",
-        url: '/get_info',
-        success: function(res) {
-            globalSong = JSON.parse(res);
+        type: "GET",
+        url: '/info',
+        success: function(songObj) {
+            globalSong = songObj;
             globalStationId = globalSong['current_station_id'];
             setActiveStation();
             setSongCard();
@@ -108,7 +108,8 @@ function main(stationId) {
     function onPlay() {
         $.ajax({
             type: "POST",
-            url: '/play',
+            url: '/action',
+            data: {actionType: 'play'},
             success: function(res) {
                 isPaused = false;
                 Materialize.toast('playing', 2000);
@@ -119,7 +120,8 @@ function main(stationId) {
     function onPause() {
         $.ajax({
             type: "POST",
-            url: '/pause',
+            url: '/action',
+            data: {actionType: 'pause'},
             success: function(res) {
                 isPaused = true;
                 Materialize.toast('paused', 2000)
@@ -130,9 +132,9 @@ function main(stationId) {
     function onNext() {
         $.ajax({
             type: "POST",
-            url: '/next',
-            success: function(res) {
-                var song = JSON.parse(res);
+            url: '/action',
+            data: {actionType: 'next'},
+            success: function(song) {
                 pollThenSet(song);
                 Materialize.toast('next', 2000)
             }
@@ -142,8 +144,9 @@ function main(stationId) {
     function onLowerVolume() {
         $.ajax({
             type: "POST",
-            url: '/lower_volume',
-            success: function(res) {
+            url: '/action',
+            data: {actionType: 'lower_volume'},
+            success: function(song) {
                 Materialize.toast('a little softer now', 2000)
             }
         });
@@ -152,8 +155,9 @@ function main(stationId) {
     function onRaiseVolume() {
         $.ajax({
             type: "POST",
-            url: '/raise_volume',
-            success: function(res) {
+            url: '/action',
+            data: {actionType: 'raise_volume'},
+            success: function(song) {
                 Materialize.toast('a little louder now', 2000)
             }
         });
@@ -164,14 +168,18 @@ function main(stationId) {
         var candStationId = station.dataset.stationId;
         if (candStationId == globalStationId)
             return;
+        console.log(candStationId);
         $.ajax({
             type: "POST",
-            url: '/change_station/' + candStationId,
+            url: '/action',
+            data: {
+                'actionType': 'change_station',
+                'actionArg': candStationId
+            },
             beforeSend: function() {
                 Materialize.toast('changing station', 2000);
             },
-            success: function(res) {
-                var song = JSON.parse(res);
+            success: function(song) {
                 globalStationId = parseInt(candStationId);
                 setActiveStation();
                 pollThenSet(song);
@@ -251,10 +259,9 @@ function main(stationId) {
 
     function pollThenSet(songObj) {
         $.ajax({
-            type: "POST",
-            url: '/get_info',
-            success: function(res) {
-                var newSongObj = JSON.parse(res);
+            type: "GET",
+            url: '/info',
+            success: function(newSongObj) {
                 if (newSongObj.title == songObj.title) {
                     // Until a notification system is in place
                     // polling is the best option.
@@ -272,10 +279,9 @@ function main(stationId) {
     function longPolling(songObj) {
         var waitingPeriod = 1000;
         $.ajax({
-            type: "POST",
-            url: '/get_info',
-            success: function(res) {
-                var newSongObj = JSON.parse(res);
+            type: "GET",
+            url: '/info',
+            success: function(newSongObj) {
                 if (newSongObj.stationName != songObj.stationName) {
                   setTimeout(function() {
                     scrollToCurrentStation();
@@ -436,9 +442,9 @@ function main(stationId) {
 
       var newImgUrl = getNewImgUrl();
       $.ajax({
-        type: "POST",
+        type: "GET",
         contentType: "application/json; charset=utf-8",
-        url: "/get_colors",
+        url: "/colors",
         data: JSON.stringify({imgUrl: newImgUrl}),
         success: function (data) {
           colorz = data.colorz;
@@ -517,16 +523,15 @@ function main(stationId) {
           $('#artistInfoModal').openModal();
       }
       if (lastArtistLookup !== globalSong.artist) {
-        $.get('/artist_info', function(data) {
-          data = JSON.parse(data)
-          $('#artistInfoText').html(data.p_tag);
-          $('#artistInfoName').html(data.artist + ' is cool');
-          onArtistInfo();
-        })
+          $.get('/artistShit', function(artistInfo) {
+              $('#artistInfoText').html(artistInfo.p_tag);
+              $('#artistInfoName').html(artistInfo.artist + ' is cool');
+              onArtistInfo();
+              lastArtistLookup = globalSong.artist;
+          });
       }
       else {
           onArtistInfo();
       }
-      lastArtistLookup = globalSong.artist;
     }
 }

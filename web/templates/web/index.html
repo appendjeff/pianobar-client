@@ -1,3 +1,4 @@
+{% load static %}
 <html>
 <head>
     <title>Pianobar Client</title>
@@ -8,16 +9,16 @@
     <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css"  media="screen,projection"/>
 
     <!-- Internal CSS Styles -->
-    <link rel="stylesheet" type="text/css" href="/static/style.css">
+    <link rel="stylesheet" type="text/css" href= "{% static "web/style.css" %}">
 
     <!-- External Javscript Libraries -->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
-    <script src="/static/lib/fuse.min.js"></script>
+    <script type="text/javascript" src="{% static "web/lib/fuse.min.js" %}"></script>
 
     <!-- Internal Javscript Libraries -->
-    <script src="/static/main.js"></script>
+    <script src="{% static "web/main.js" %}"></script>
 
   </head>
 <body>
@@ -122,7 +123,7 @@
                 </div>
 
                 <div id="stationItems">
-                {% for stationId, stationName in stations.iteritems() %}
+                {% for stationId, stationName in stations %}
                 <a class="collection-item flow-text station-item" data-station-id="{{stationId}}">
                     {{stationName}}
                 </a>
@@ -139,7 +140,7 @@
 
         // In a non-lazy future, use the API and parse that damn shiz
         window.stations = [];
-        {% for stationId, stationName in stations.iteritems() %}
+        {% for stationId, stationName in stations %}
           window.stations.push({
             "stationName": "{{stationName}}",
             "id": {{stationId}}

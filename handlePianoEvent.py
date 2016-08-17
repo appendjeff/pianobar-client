@@ -4,8 +4,8 @@ import os
 import sys
 import json
 
-import settings
-from colors import get_colors
+from pianobarclient import settings
+from web import colors
 
 if sys.argv[1] == 'songstart':
     event = {}
@@ -20,7 +20,7 @@ if sys.argv[1] == 'songstart':
     img_dir = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'static', 'img')
     # try to do k-means clustering to get top 3 colors
     try:
-        event['colorz'] = get_colors(event['coverArt'])
+        event['colorz'] = colors.get_colors(event['coverArt'])
     except IOError:
         # The client uses hexes, so try to keep colorz as hex
         event['colorz'] = ['#FFFFFF', '#F6CA2C', '#000000']

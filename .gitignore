@@ -1,2 +1,3 @@
 *.pyc
 .history.json
+db.sqlite3

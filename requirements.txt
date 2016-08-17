@@ -1,4 +1,4 @@
-flask
-Pillow
+django==1.10
 requests
 beautifulsoup4
+Pillow
