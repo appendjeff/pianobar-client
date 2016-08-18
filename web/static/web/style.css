@@ -73,6 +73,11 @@ input:focus{
     border-width: 10px;
 }
 
+#tagItemContainer {
+    height: 400px;
+    overflow-y: auto;
+}
+
 #stationItems {
     height: 400px;
     overflow-y: auto;

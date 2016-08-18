@@ -5,6 +5,7 @@ var globalSong;
 var colorz = ['#000000', '#e7e7e7', '#ffffff'];
 var tags = [];
 var isPaused = false;
+var isHistoryShown = false;
 var lastArtistLookup = 'Not Bob Dylan'
 var oldBorder = {};
 
@@ -261,6 +262,9 @@ function main(stationId) {
             type: "GET",
             url: '/info',
             success: function(newSongObj) {
+                if (isHistoryShown) {
+                    setTimeout(setHistory, 100);
+                }
                 if (newSongObj.title == songObj.title) {
                     // Until a notification system is in place
                     // polling is the best option.
@@ -334,6 +338,7 @@ function main(stationId) {
     }
 
     function setHistory() {
+        isHistoryShown = true;
         $('#stationItems').addClass('hidden');
         $('#addStation').addClass('hidden');
         $('#majorTagContainer').removeClass('hidden');
@@ -341,24 +346,28 @@ function main(stationId) {
         var majorHTML = '<div class="majorTag">History' +
                                 '<i class="fa fa-times"></i></div>';
         $('#stationSearch').prop('disabled', true)
-        $('#searchTagContainer #majorTags').append(majorHTML);
+        $('#searchTagContainer #majorTags').html(majorHTML);
         $('#searchTagContainer #minorTags').addClass('majorTagVisible');
         $("#majorTags .majorTag i").off().click(tearDownHistory);
+        $('#stationItems').height(0)
+
         $.get('/history', function(res) {
 			var $historyList = $("<ul>", {'class': 'historyList'});
 			var $historyListItem;
 			var historyValues = res['history'];
 			for (var i=0; i<historyValues.length; i++) {
-				$historyListItem = $("<li>", {class: "history"});
+				$historyListItem = $("<li>", {class: "history colorz-c-0 colorz-bc-1"});
 				$historyListItem.text(historyValues[i].song);
 				$historyList.append($historyListItem);
 			}
-			$('#majorTagContainer').append($historyList);
-
+			$('#majorTagContainer').html($historyList);
+            setColorz();
         });
     }
 
     function tearDownHistory() {
+        isHistoryShown = false;
+        $('#stationItems').height(400)
         $('#majorTagContainer').empty();
         $('#stationItems').removeClass('hidden');
         $('#addStation').removeClass('hidden');
@@ -476,7 +485,7 @@ function main(stationId) {
         if (secondCleanup === 2) {
           $('#coverArtContainer').css('min-height', '0px');
         }
-      } 
+      }
 
       var initialWidth = $('#songCoverArt').width()
       var dmpImgPos = $('#dumpImage').position();
