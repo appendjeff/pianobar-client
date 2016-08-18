@@ -6,9 +6,27 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
+from models import Artist, Album, Song, History
+
 from pianobar_control import PianobarControl
 from colors import get_colors as get_img_url_colors
 from get_wiki_data import get_first_p
+
+
+def set_db(current_song):
+    artist, _ = Artist.objects.get_or_create(name=current_song.get('artist'))
+    album, _ = Album.objects.get_or_create(
+            name=current_song.get('album'),
+            img_url=current_song.get('coverArt'))
+    song, new_song = Song.objects.get_or_create(artist=artist, album=album,
+            name=current_song.get('title'))
+
+    last_song = History.objects.latest().song
+    if last_song != song:
+        History.objects.create(song=song,
+                station_name=current_song.get('stationName'))
+
+
 
 def get_current_song():
 
@@ -31,10 +49,14 @@ def get_current_song():
         c +=1
     current_song['stations'] = stations
     current_song['current_station_id'] = current_station_id
+
+    set_db(current_song)
     return current_song
 
 def index(request):
     current_song = get_current_song()
+
+
     things = dict(
         cover_art_src=current_song['coverArt'],
         artist=current_song.get('artist'),
