@@ -71,8 +71,10 @@
         <div class="col s12 m5">
             <div id="stations" class="collection with-header">
                 <div class="collection-header">
-                        <h3 class="color-me">Stations</h3>
-                        <div id="searchTagContainer"></div>
+                        <div id="searchTagContainer">
+                            <div id="majorTags"></div>
+                            <div id="minorTags"></div>
+                        </div>
                         <input placeholder="filter" id="stationSearch" type="text">
                 </div>
                   <a id="addStation" class="btn-floating btn-large 
@@ -122,12 +124,15 @@
                     </div>
                 </div>
 
-                <div id="stationItems">
-                {% for stationId, stationName in stations %}
-                <a class="collection-item flow-text station-item" data-station-id="{{stationId}}">
-                    {{stationName}}
-                </a>
-                {% endfor %}
+                <div id="tagItemContainer">
+                    <div id="majorTagContainer" class="hidden"></div>
+                    <div id="stationItems">
+                    {% for stationId, stationName in stations %}
+                    <a class="collection-item flow-text station-item" data-station-id="{{stationId}}">
+                        {{stationName}}
+                    </a>
+                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

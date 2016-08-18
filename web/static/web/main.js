@@ -168,7 +168,6 @@ function main(stationId) {
         var candStationId = station.dataset.stationId;
         if (candStationId == globalStationId)
             return;
-        console.log(candStationId);
         $.ajax({
             type: "POST",
             url: '/action',
@@ -315,12 +314,15 @@ function main(stationId) {
             $('#stationSearch').val('');
             return;
         }
+        else if (q === 'history') {
+            return setHistory();
+        }
         else if (keyCode && [13].indexOf(keyCode) != -1 && q.length > 0) {
             // Create a tag
             var tagHash = Math.random().toString();
             var searchTagHTML = '<div class="chip stationSearchTag" data-tag-hash="' + tagHash +'">' + q +
                                 '<i class="fa fa-times"></i></div>';
-            $('#searchTagContainer').append(searchTagHTML);
+            $('#searchTagContainer #minorTags').append(searchTagHTML);
             $(".stationSearchTag i").off().click(onSearchTagClick);
             tags.push(q);
             $('#stationSearch').val('');
@@ -329,6 +331,45 @@ function main(stationId) {
             $('#stationSearch').val('');
         }
         stationSearch();
+    }
+
+    function setHistory() {
+        $('#stationItems').addClass('hidden');
+        $('#addStation').addClass('hidden');
+        $('#majorTagContainer').removeClass('hidden');
+
+        var majorHTML = '<div class="majorTag">History' +
+                                '<i class="fa fa-times"></i></div>';
+        $('#stationSearch').prop('disabled', true)
+        $('#searchTagContainer #majorTags').append(majorHTML);
+        $('#searchTagContainer #minorTags').addClass('majorTagVisible');
+        $("#majorTags .majorTag i").off().click(tearDownHistory);
+        $.get('/history', function(res) {
+			var $historyList = $("<ul>", {'class': 'historyList'});
+			var $historyListItem;
+			var historyValues = res['history'];
+			for (var i=0; i<historyValues.length; i++) {
+				$historyListItem = $("<li>", {class: "history"});
+				$historyListItem.text(historyValues[i].song);
+				$historyList.append($historyListItem);
+			}
+			$('#majorTagContainer').append($historyList);
+
+        });
+    }
+
+    function tearDownHistory() {
+        $('#majorTagContainer').empty();
+        $('#stationItems').removeClass('hidden');
+        $('#addStation').removeClass('hidden');
+
+        $('#stationSearch').val('')
+        stationSearch();
+        $('#stationSearch').prop('disabled', false)
+        $('#stationSearch').prop('disabled', false)
+        $('#searchTagContainer #majorTags').empty();
+        $('#searchTagContainer #minorTags').removeClass('majorTagVisible');
+        setTimeout(scrollToCurrentStation, 300);
     }
 
     function stationSearch() {
@@ -497,7 +538,6 @@ function main(stationId) {
             oldBorder.padding = $('.cardContentBorder').css('padding');
             oldBorder.borderWidth= $('.cardContentBorder').css('border-top-width');
         }
-        console.log(oldBorder);
         var newPadding = parseInt(oldBorder.padding) - parseInt(oldBorder.borderWidth);
         $('.cardContentBorder').animate({
             'padding': newPadding + 'px',
@@ -506,7 +546,6 @@ function main(stationId) {
         $('.card .card-content').css('color', colorz[0]);
     }
     function onCardContentOut() {
-        console.log(oldBorder);
         $('.cardContentBorder').animate({
             'padding': oldBorder.paddding,
             'border-width': oldBorder.borderWidth
@@ -534,4 +573,5 @@ function main(stationId) {
           onArtistInfo();
       }
     }
+
 }

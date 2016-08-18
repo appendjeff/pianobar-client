@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 
 from models import Artist, Album, Song, History
 
@@ -21,11 +22,16 @@ def set_db(current_song):
     song, new_song = Song.objects.get_or_create(artist=artist, album=album,
             name=current_song.get('title'))
 
-    last_song = History.objects.latest().song
-    if last_song != song:
+    try:
+        last_song = History.objects.latest().song
+    except History.DoesNotExist:
+        # When there is no history yet ..
         History.objects.create(song=song,
                 station_name=current_song.get('stationName'))
-
+    else:
+        if last_song != song:
+            History.objects.create(song=song,
+                station_name=current_song.get('stationName'))
 
 
 def get_current_song():
@@ -53,6 +59,7 @@ def get_current_song():
     set_db(current_song)
     return current_song
 
+
 def index(request):
     current_song = get_current_song()
 
@@ -67,8 +74,14 @@ def index(request):
     )
     return render(request, 'web/index.html', things)
 
+
+def get_history(request):
+    return JsonResponse({'history': History.export(1)})
+
+
 def get_info(request):
     return JsonResponse(get_current_song())
+
 
 def get_artist_info(request):
     current_song = get_current_song()
@@ -76,11 +89,13 @@ def get_artist_info(request):
     p_tag = get_first_p(artist)
     return JsonResponse({'p_tag': p_tag, 'artist': artist})
 
+
 @csrf_exempt
 def get_colors(request):
     img_url = request.POS.get('imgUrl')
     colorz = get_img_url_colors(img_url)
     return JsonResponse({'colorz': colorz})
+
 
 @csrf_exempt
 def action(request):
@@ -90,8 +105,6 @@ def action(request):
     """
     action_type = request.POST.get('actionType')
     action_arg = request.POST.get('actionArg')
-    print action_type, action_arg
     pianobar_controller = PianobarControl()
     pianobar_controller.perform_action(action_type, action_arg)
     return JsonResponse(get_current_song())
-

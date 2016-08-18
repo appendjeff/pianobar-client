@@ -115,6 +115,23 @@ body {
     position: relative;
     top: 2px;
 }
+.majorTag {
+    box-shadow:0 1px 4px 0 rgba(0,0,0,0.37);
+    width: 100%;
+    text-align: center;
+    font-size: xx-large;
+}
+.majorTag:hover {
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2),0 6px 10px 0 rgba(0,0,0,0.3);
+}
+.majorTag i {
+    float: right;
+    padding: 4px;
+    font-size: 21px;
+}
+.MajorTag i:hover {
+    font-size: 25px;
+}
 
 #controls {
     margin: 0 auto;
@@ -149,4 +166,18 @@ body {
     -moz-transition: color 1s ease-in-out; /* FF 4 */
     -webkit-transition: color 1s ease-in-out; /* Safari & Chrome */
     -o-transition: color 1s ease-in-out; /* Opera */
+}
+
+#stations .collection-header {
+    padding: 30px;
+}
+
+.majorTagVisible {
+    opacity: .1;
+}
+
+ul.historyList li {
+    padding: 5px;
+    margin: 10px;
+    border: solid;
 }

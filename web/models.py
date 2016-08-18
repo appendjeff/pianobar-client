@@ -41,3 +41,14 @@ class History(models.Model):
 
     def __str__(self):
         return '%s listened to at %s' %(str(self.song), self.listened_at)
+
+    @staticmethod
+    def export(x):
+        def dict_callback(x):
+            return {
+                    'song': x.song.name,
+                    'artist': x.song.artist.name,
+                    'album': x.song.album.name,
+                    'listened_at': x.listened_at
+                    }
+        return map(dict_callback, History.objects.order_by('-listened_at'))
