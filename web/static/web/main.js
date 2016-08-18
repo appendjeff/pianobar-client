@@ -418,6 +418,7 @@ function main(stationId) {
                 $(stationEl).addClass('stationHidden');
             }
         });
+        setColorz();
     }
 
     function onSearchTagClick() {

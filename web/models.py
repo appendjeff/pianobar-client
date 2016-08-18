@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
 
 
 class Thing(models.Model):
@@ -29,6 +31,11 @@ class Song(Thing):
     artist = models.ForeignKey(Artist)
     album = models.ForeignKey(Album)
     notes = models.TextField(null=True, blank=True)
+    play_count = models.IntegerField(default=0, blank=True, null=True)
+
+    def increment_play_count(self):
+        self.play_count += 1
+        self.save()
 
 
 class History(models.Model):
@@ -40,7 +47,7 @@ class History(models.Model):
         get_latest_by = 'listened_at'
 
     def __str__(self):
-        return '%s listened to at %s' %(str(self.song), self.listened_at)
+        return '%s listened to %s times' %(str(self.song), str(self.song.play_count))
 
     @staticmethod
     def export(x):
@@ -49,6 +56,14 @@ class History(models.Model):
                     'song': x.song.name,
                     'artist': x.song.artist.name,
                     'album': x.song.album.name,
-                    'listened_at': x.listened_at
+                    'listened_at': x.listened_at,
+                    'play_count': x.song.play_count,
                     }
         return map(dict_callback, History.objects.order_by('-listened_at'))
+
+
+@receiver(pre_delete, sender=History, dispatch_uid='history_delete_signal')
+def handle_delete(sender, instance, using, **kwargs):
+    if instance.song.play_count > 0:
+        instance.song.play_count -= 1
+        instance.song.save()

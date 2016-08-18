@@ -32,6 +32,7 @@ def set_db(current_song):
         if last_song != song:
             History.objects.create(song=song,
                 station_name=current_song.get('stationName'))
+            song.increment_play_count()
 
 
 def get_current_song():

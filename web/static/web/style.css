@@ -183,6 +183,10 @@ body {
 
 ul.historyList li {
     padding: 5px;
-    margin: 10px;
-    border: solid;
+    margin: 6px 9px;
+    box-shadow:0 1px 4px 0 rgba(0,0,0,0.37);
+}
+
+ul.historyList li:hover {
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2),0 6px 10px 0 rgba(0,0,0,0.3);
 }
