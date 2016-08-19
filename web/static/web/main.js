@@ -8,6 +8,8 @@ var isPaused = false;
 var isHistoryShown = false;
 var lastArtistLookup = 'Not Bob Dylan'
 var oldBorder = {};
+var historyPageIndex = 0;
+var isAppendHistoryFinished = false;
 
 
 function main(stationId) {
@@ -40,8 +42,9 @@ function main(stationId) {
      * Event delegation
      */
     function eventDelegation() {
-      $('body').keyup(onKeyPressUp);
-      $('#changeColor').click(shuffleColorTheme)
+      $('body').keyup(onBodyKeyPressUp);
+      $('.wikipediaActionBtn').click(onCardContent)
+      $('.changeColorBtn').click(shuffleColorTheme)
       $('#play').click(onPlay);
       $('#pause').click(onPause);
       $('#next').click(onNext);
@@ -58,7 +61,9 @@ function main(stationId) {
       $('#coverArtContainer').hover(onCoverArtIn, onCoverArtOut);
 
       $('.card-content').hover(onCardContentIn, onCardContentOut);
-      $('.card-content').click(onCardContent)
+
+      $('#navStations').click(tearDownHistory);
+      $('#navHistory').click(setHistory);
     }
 
 
@@ -74,15 +79,15 @@ function main(stationId) {
         setSongCard();
     }
 
-    function onKeyPressUp(el) {
+    function onBodyKeyPressUp(el) {
       if (event.target.tagName === 'INPUT') {
         return false;
       }
-      if (el.keyCode == 75) {
+      if (el.keyCode == 75) { // Play/Pause on K
           (isPaused ? onPlay() : onPause());
           isPaused = !isPaused
       }
-      if (el.keyCode == 76)
+      if (el.keyCode == 76) // Next Song on L
           onNext();
     }
 
@@ -219,11 +224,14 @@ function main(stationId) {
         $('.color-me').css('color', colorz[0]);
         $('.stationSearchTag').css('color', colorz[0]);
         $('#addStationIcon').css('color', colorz[0]);
+        $('.navTab i').css('color', colorz[0]);
 
         $('.ctrl-btn').css('background-color', colorz[1]);
         $('#songTitle').css('color', colorz[1]);
         $('a.collection-item.station-item').css('color', colorz[1]);
         $('#addStation').attr('style', 'background-color:' + colorz[1] +' !important');
+        $('.navTab').attr('style', 'background-color:' + colorz[1] +' !important');
+
 
         $('.cardContentBorder').css('border-color', colorz[2]);
         $('a.collection-item.station-item').css('background-color', colorz[2]);
@@ -238,6 +246,9 @@ function main(stationId) {
         $('.colorz-bc-0').css('background-color', colorz[0]);
         $('.colorz-bc-1').css('background-color', colorz[1]);
         $('.colorz-bc-2').css('background-color', colorz[2]);
+
+        $('.navTabActive').attr('style', 'background-color:' + colorz[0] +' !important');
+        $('.navTabActive i').css('color', colorz[1]);
 
         $('a.collection-item.station-item.active').css('background-color', colorz[0]);
         return colorz;
@@ -337,42 +348,76 @@ function main(stationId) {
         stationSearch();
     }
 
-    function setHistory() {
-        isHistoryShown = true;
-        $('#stationItems').addClass('hidden');
-        $('#addStation').addClass('hidden');
-        $('#majorTagContainer').removeClass('hidden');
-
-        var majorHTML = '<div class="majorTag">History' +
-                                '<i class="fa fa-times"></i></div>';
-        $('#stationSearch').prop('disabled', true)
-        $('#searchTagContainer #majorTags').html(majorHTML);
-        $('#searchTagContainer #minorTags').addClass('majorTagVisible');
-        $("#majorTags .majorTag i").off().click(tearDownHistory);
-        $('#stationItems').height(0)
-
-        $.get('/history', function(res) {
-			var $historyList = $("<ul>", {'class': 'historyList'});
+    function appendHistory() {
+        /*
+         * Infinite scrolling for history. Uses global historyPageIndex
+         *
+         * Todo - cache values
+         */
+        isAppendHistoryFinished = false;
+        $.get('/history?historyPageIndex='+historyPageIndex, function(res) {
+			var $historyList = $("ul.historyList");
 			var $historyListItem;
 			var historyValues = res['history'];
 			for (var i=0; i<historyValues.length; i++) {
 				$historyListItem = $("<li>", {class: "history colorz-c-0 colorz-bc-1"});
 				$historyListItem.text(historyValues[i].song);
+				$historyListItem.attr('data-artist', historyValues[i].artist);
+				$historyListItem.attr('data-play-count', historyValues[i].play_count);
+				$historyListItem.attr('data-song', historyValues[i].song);
+                $historyListItem.hover(function() {
+                        $(this).text($(this).attr('data-artist'));
+                    }, function() {
+                        $(this).text($(this).attr('data-song'));
+                });
 				$historyList.append($historyListItem);
 			}
-			$('#majorTagContainer').html($historyList);
+            historyPageIndex += 1;
             setColorz();
+            isAppendHistoryFinished = true;
         });
+    }
+
+    function onHistoryScroll() {
+        var two = $(this).prop('scrollHeight') - $(this).innerHeight();
+        var one = $(this).scrollTop();
+        if (two - one < 50 && isAppendHistoryFinished) {
+            appendHistory();
+        }
+    }
+
+    function setHistory() {
+        $('.navTab').removeClass('navTabActive');
+        $('#navHistory').addClass('navTabActive');
+        setColorz();
+        isHistoryShown = true;
+        $('#addStation').addClass('hidden');
+        $('#stationItems').addClass('hidden');
+        $('#majorTagContainer').removeClass('hidden');
+
+        //$('#stationSearch').prop('disabled', true)
+        $('#searchTagContainer #minorTags').addClass('majorTagVisible');
+        $('#stationItems').height(0)
+
+		var $historyList = $("<ul>", {'class': 'historyList'});
+        $('#tagItemContainer').on('scroll', onHistoryScroll);
+		$('#majorTagContainer').html($historyList);
+        appendHistory()
     }
 
     function tearDownHistory() {
         isHistoryShown = false;
+        historyPageIndex = 0;
+        $('#tagItemContainer').off('scroll');
+        $('.navTab').removeClass('navTabActive');
+        $('#navStations').addClass('navTabActive');
         $('#stationItems').height(400)
         $('#majorTagContainer').empty();
         $('#stationItems').removeClass('hidden');
         $('#addStation').removeClass('hidden');
 
         $('#stationSearch').val('')
+        setColorz();
         stationSearch();
         $('#stationSearch').prop('disabled', false)
         $('#stationSearch').prop('disabled', false)
@@ -543,7 +588,7 @@ function main(stationId) {
     }
 
     function onCardContentIn() {
-        // Follow colors from 
+        // Follow colors from
         if (!oldBorder.padding) {
             oldBorder.padding = $('.cardContentBorder').css('padding');
             oldBorder.borderWidth= $('.cardContentBorder').css('border-top-width');
@@ -555,6 +600,7 @@ function main(stationId) {
         }, 300);
         $('.card .card-content').css('color', colorz[0]);
     }
+
     function onCardContentOut() {
         $('.cardContentBorder').animate({
             'padding': oldBorder.paddding,
@@ -567,6 +613,7 @@ function main(stationId) {
       function onArtistInfo() {
           var artistInfoLength = $('#artistInfoText').html().length;
           if (artistInfoLength < 150) {
+            Materialize.toast('Wikipedia article not found', 2000);
             return false;
           }
           $('#artistInfoModal').openModal();

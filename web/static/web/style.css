@@ -173,8 +173,12 @@ body {
     -o-transition: color 1s ease-in-out; /* Opera */
 }
 
-#stations .collection-header {
-    padding: 30px;
+.tabNavBar ul {
+    display: inline-flex;
+}
+
+.searchContainer {
+    padding: 15px;
 }
 
 .majorTagVisible {
@@ -189,4 +193,8 @@ ul.historyList li {
 
 ul.historyList li:hover {
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2),0 6px 10px 0 rgba(0,0,0,0.3);
+}
+
+.tabNavBar div div a {
+    width: 100%;
 }

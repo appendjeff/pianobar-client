@@ -77,7 +77,8 @@ def index(request):
 
 
 def get_history(request):
-    return JsonResponse({'history': History.export(1)})
+    history_page_index = request.GET.get('historyPageIndex', '0')
+    return JsonResponse({'history': History.export(history_page_index)})
 
 
 def get_info(request):

@@ -50,7 +50,8 @@ class History(models.Model):
         return '%s listened to %s times' %(str(self.song), str(self.song.play_count))
 
     @staticmethod
-    def export(x):
+    def export(p):
+        p = int(p)
         def dict_callback(x):
             return {
                     'song': x.song.name,
@@ -59,7 +60,7 @@ class History(models.Model):
                     'listened_at': x.listened_at,
                     'play_count': x.song.play_count,
                     }
-        return map(dict_callback, History.objects.order_by('-listened_at'))
+        return map(dict_callback, History.objects.order_by('-listened_at')[p:p+10])
 
 
 @receiver(pre_delete, sender=History, dispatch_uid='history_delete_signal')

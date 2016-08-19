@@ -24,7 +24,7 @@ if sys.argv[1] == 'songstart':
     except IOError:
         # The client uses hexes, so try to keep colorz as hex
         event['colorz'] = ['#FFFFFF', '#F6CA2C', '#000000']
-        event['coverArt'] = 'static/images/no_cover_art.png'
+        event['coverArt'] = 'static/images/web/no_cover_art.png'
 
     with open(settings.HISTORY_PATH, 'w') as f:
         f.write(json.dumps(event))

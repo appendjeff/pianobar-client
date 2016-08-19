@@ -26,24 +26,31 @@
     <div class="row" id="mainContent">
         <div class="colorBar color-me-back valign-wrapper">
                 <div id="controls" class="valign">
-                        <div id="changeColor" class="ctrl-btn waves-effect waves-light btn">
-                            <i class="fa fa-flask"></i>
-                        </div>
-                        <div id="pause" class="ctrl-btn waves-effect waves-light btn">
-                            <i class="fa fa-pause"></i>
-                        </div>
-                        <div id="play" class="ctrl-btn waves-effect waves-light btn">
-                            <i class="fa fa-play"></i>
-                        </div>
-                        <div id="next" class="ctrl-btn waves-effect waves-light btn">
-                            <i class="fa fa-step-forward"></i>
-                        </div>
+                        <span class="ctrl-button-group">
+                            <div id="pause" class="ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-pause"></i>
+                            </div>
+                            <div id="play" class="ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-play"></i>
+                            </div>
+                            <div id="next" class="ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-step-forward"></i>
+                            </div>
+                        </span>
                         <span class="ctrl-button-group">
                             <div id="lowerVolume" class="ctrl-btn waves-effect waves-light btn">
                                 <i class="fa fa-volume-down"></i>
                             </div>
                             <div id="raiseVolume" class="ctrl-btn waves-effect waves-light btn">
                                 <i class="fa fa-volume-up"></i>
+                            </div>
+                        </span>
+                        <span class="ctrl-button-group">
+                            <div class="wikipediaActionBtn ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-wikipedia-w" aria-hidden="true"></i>
+                            </div>
+                            <div class="changeColorBtn ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-flask"></i>
                             </div>
                         </span>
                 </div>
@@ -71,11 +78,32 @@
         <div class="col s12 m5">
             <div id="stations" class="collection with-header">
                 <div class="collection-header">
-                        <div id="searchTagContainer">
-                            <div id="majorTags"></div>
-                            <div id="minorTags"></div>
-                        </div>
+                    <div class="tabNavBar">
+					  <div class="row">
+						  <div class="col s4">
+                              <a id="navStations" class="waves-effect waves-light btn navTab navTabActive">
+                                  <i class="fa fa-bars" aria-hidden="true"></i>
+                              </a>
+                          </div>
+						  <div class="col s4">
+                              <a id="navHistory" class="waves-effect waves-light red btn navTab">
+                                  <i class="fa fa-history" aria-hidden="true"></i>
+                              </a>
+                          </div>
+						  <div class="col s4">
+                              <a id="navFavorites" class="waves-effect waves-light red btn navTab">
+                                  <i class="fa fa-star" aria-hidden="true"></i>
+                              </a>
+                          </div>
+						</div>
+                    </div>
+                    <div id="searchTagContainer">
+                        <div id="majorTags"></div>
+                        <div id="minorTags"></div>
+                    </div>
+                    <div class="searchContainer">
                         <input placeholder="filter" id="stationSearch" type="text">
+                    </div>
                 </div>
                   <a id="addStation" class="btn-floating btn-large 
                       waves-effect waves-light red btn modal-trigger"
@@ -112,11 +140,11 @@
                 <div id="artistInfoModal" class="modal colorz-bc-0">
                     <div class="modal-content">
                       <div id="artistInfoText" class="row"></div>
-                      <br><div class="row"><p>Make cool interative wiki browser.</p><ul>
-                          <li>On album hoer show thumbnail of the album cover art.. perhaps with option to update the main cover art fo rthe view</li>
-                        </ul></div>
                     </div>
                     <div class="modal-footer colorz-bc-1">
+                            <div class="changeColorBtn ctrl-btn waves-effect waves-light btn">
+                                <i class="fa fa-flask"></i>
+                            </div>
                       <a href="#!" class="modal-action modal-close 
                       waves-effect waves-green btn-flat colorz-c-0">
                         <span id="artistInfoName"></span>
