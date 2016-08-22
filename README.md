@@ -32,15 +32,6 @@ This pianobar client uses a couple of open source projects to work properly:
 * [jQuery] - fast, small, and feature-rich JavaScript library.
 * [Materialize]- Material design library
 
-And of course this pianobar client itself is open source.
-
-License
-----
-
-MIT
-
-**Free Software, Hell Yeah!**
-
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
@@ -50,4 +41,3 @@ MIT
    [Django]: <https://www.djangoproject.com/>
    [Pillow]: <https://pillow.readthedocs.org/en/3.0.0/index.html>
    [Materialize]: <http://materializecss.com/>
-
