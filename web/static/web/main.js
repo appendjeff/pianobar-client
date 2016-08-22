@@ -92,6 +92,11 @@ function main(stationId) {
     }
 
     function shuffleColorTheme() {
+        /*
+         * Try only one (speed) attempt at random shuffle. If it
+         * fails, then just rotate array.
+         * Set colorz on finish.
+         */
         function shuffle() {
             var j, x, i;
             for (i = colorz.length; i; i -= 1) {
@@ -104,11 +109,14 @@ function main(stationId) {
         }
         var oldColorz = colorz.slice();
         shuffle();
-        if (oldColorz !== colorz)
-            setColorz();
-        else {
-            shuffleColorTheme();
+        var colorzAreSame = false;
+        for (var i=0;i<colorz.length;i++) {
+            if (colorz[i] == oldColorz[i])
+                colorzAreSame = true;
         }
+        if (colorzAreSame)
+            colorz.unshift(colorz.pop())
+        setColorz();
     }
 
     function onPlay() {
