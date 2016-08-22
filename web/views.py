@@ -11,7 +11,7 @@ from models import Artist, Album, Song, History
 
 from pianobar_control import PianobarControl
 from colors import get_colors as get_img_url_colors
-from get_wiki_data import get_first_p
+from get_wiki_data import get_artist_bio
 
 
 def set_db(current_song):
@@ -88,7 +88,7 @@ def get_info(request):
 def get_artist_info(request):
     current_song = get_current_song()
     artist = current_song['artist']
-    p_tag = get_first_p(artist)
+    p_tag = get_artist_bio(artist)
     return JsonResponse({'p_tag': p_tag, 'artist': artist})
 
 
