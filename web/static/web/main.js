@@ -14,6 +14,7 @@ var lastArtistLookup = 'Not Bob Dylan'
 var oldBorder = {};
 var historyPageIndex = 0;
 var isAppendHistoryFinished = false;
+var blurb;
 
 
 function main(stationId) {
@@ -628,7 +629,13 @@ function main(stationId) {
             Materialize.toast('Wikipedia article not found', 2000);
             return false;
           }
-          $('#artistInfoModal').openModal();
+          $('#artistInfoModal').openModal({
+            dismissible: true,
+            complete: function() {
+                if (blurb)
+                    blurb.remove();
+            }
+          });
       }
       if (lastArtistLookup !== globalSong.artist) {
           $.get('/artistShit', function(artistInfo) {
@@ -647,8 +654,19 @@ function main(stationId) {
     function setWikiHover(wiki_a_tag_els) {
         /*
          * For each wikipedia link this function adds snippet hover info.
+         *
+         *
+         *
+         * TODO : Header
+         *      - Add sitemap for header this --- Artha Franklin -> Billboard (truncate where needed)
+         *      - Add close button
+         *
+         * TODO : Blurb
+         *      - Make blurb persitent. Allow for multiple blurbs open at once. (Windows!!!)
+         *      - Make the blurbs draggable.
+         *
          */
-        var el;
+        var wiki_a_el;
         var match_str = 'wikipedia';
         var blurbTitle;
         var blurbText;
@@ -657,7 +675,7 @@ function main(stationId) {
             '&prop=extracts&format=json&exintro=&callback=?&titles=';
         var destroyTooltips = {};
 
-        var blurb = $(document.createElement('div'))
+        blurb = $(document.createElement('div'))
         blurb.addClass('blurb');
         var blurbHeader = $('<div class="blurb-header">This is the header</div>');
         var blurbContent = $(document.createElement('div'));
@@ -668,7 +686,7 @@ function main(stationId) {
             /*
              * Set Blurb text and other onEvents
              */
-            if (!blurbText || blurbText.length < 5)
+            if (!blurbText || blurbText.length < 10)
                 return blurb.remove();
 
             blurb.html(blurbHeader);
@@ -677,9 +695,44 @@ function main(stationId) {
             setTimeout(function() {
                 if (destroyTooltips[blurbTitle] === true) {
                     destroyTooltips[blurbTitle] = false;
-                    console.log('time got through!');
                 }
             }, 300);
+        }
+
+        function wikiHoverOn() {
+            blurbTitle = this.href.split('/').slice(-1)[0];
+            if (destroyTooltips[blurbTitle] === false) {
+                // Do not set an existing tooltip.
+                return;
+            }
+            else {
+                destroyTooltips = {};
+            }
+            if (blurb) {
+                blurb.remove();
+            }
+            var aTagTop = $(this).offset().top;
+            var aTagLeft = $(this).offset().left;
+            blurb.css({top: aTagTop + 40, left: aTagLeft});
+            destroyTooltips[blurbTitle] = true;
+            $('#blurbContainer').append(blurb);
+            var candBlurbText = localStorage.getItem(
+                    'wikiText' + blurbTitle);
+            if (!candBlurbText) {
+                $.getJSON(baseWikiAPIUrl + blurbTitle, function(res) {
+                    for (var first in res.query.pages) {
+                        blurbText = res.query.pages[first].extract;
+                        break;
+                    }
+                    setBlurb(blurb, candBlurbText);
+                    // Save the wikipedia API some bandwidth
+                    localStorage.setItem(
+                            'wikiText' + blurbTitle, blurbText);
+                });
+            }
+            else {
+                setBlurb(blurb, candBlurbText);
+            }
         }
 
         for (var i=0;i<wiki_a_tag_els.length;i++) {
@@ -687,43 +740,9 @@ function main(stationId) {
             // Since we are adding custom alt text, remove title
             wiki_a_tag_els[i].removeAttribute('title');
             oldOuterHTML = wiki_a_tag_els[i].outerHTML;
-            el = $(wiki_a_tag_els[i]);
-            if (el.attr('href').indexOf(match_str !== -1)) {
-                $(el).hover(function() {
-                    blurbTitle = this.href.split('/').slice(-1)[0];
-                    if (destroyTooltips[blurbTitle] === false) {
-                        // Do not set an existing tooltip.
-                        return;
-                    }
-                    else {
-                        destroyTooltips = {};
-                    }
-                    if (blurb) {
-                        blurb.remove();
-                    }
-                    var aTagTop = $(this).offset().top;
-                    var aTagLeft = $(this).offset().left;
-                    blurb.css({top: aTagTop + 40, left: aTagLeft});
-                    destroyTooltips[blurbTitle] = true;
-                    $('#blurbContainer').append(blurb);
-                    var candBlurbText = localStorage.getItem(
-                            'wikiText' + blurbTitle);
-                    if (!candBlurbText) {
-                        $.getJSON(baseWikiAPIUrl + blurbTitle, function(res) {
-                            for (var first in res.query.pages) {
-                                blurbText = res.query.pages[first].extract;
-                                break;
-                            }
-                            setBlurb(blurb, candBlurbText);
-                            // Save the wikipedia API some bandwidth
-                            localStorage.setItem(
-                                    'wikiText' + blurbTitle, blurbText);
-                        });
-                    }
-                    else {
-                        setBlurb(blurb, candBlurbText);
-                    }
-                }, function() {
+            wiki_a_el = $(wiki_a_tag_els[i]);
+            if (wiki_a_el.attr('href').indexOf(match_str !== -1)) {
+                $(wiki_a_el).hover(wikiHoverOn, function() {
                     blurbTitle = this.href.split('/').slice(-1)[0];
                     if (destroyTooltips[blurbTitle]) {
                         blurb.remove();
