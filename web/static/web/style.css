@@ -198,3 +198,43 @@ ul.historyList li:hover {
 .tabNavBar div div a {
     width: 100%;
 }
+
+#artistInfoText {
+    position: relative;
+}
+
+#artistInfoModal {
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+#blurbContainer {
+    height: 0;
+    position: relative;
+}
+
+.blurb {
+    left: 200;
+    position: absolute;
+    background-color: black;
+    color: white;
+    padding: 5px;
+    width: 300px;
+    font-size: 13px;
+    z-index: 20000;
+}
+
+.blurb-header {
+    background: white;
+    color: black;
+    margin: 10px;
+    padding: 5px;
+    position: relative;
+    text-align: center;
+}
+
+.blurb-content {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 4px;
+}

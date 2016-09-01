@@ -1,5 +1,9 @@
 'use strict'
 
+/*
+ * Globals
+ *
+ */
 var globalStationId;
 var globalSong;
 var colorz = ['#000000', '#e7e7e7', '#ffffff'];
@@ -632,6 +636,7 @@ function main(stationId) {
               $('#artistInfoName').html(artistInfo.artist + ' is cool');
               onArtistInfo();
               lastArtistLookup = globalSong.artist;
+              setWikiHover($('#artistInfoText a'));
           });
       }
       else {
@@ -639,4 +644,93 @@ function main(stationId) {
       }
     }
 
+    function setWikiHover(wiki_a_tag_els) {
+        /*
+         * For each wikipedia link this function adds snippet hover info.
+         */
+        var el;
+        var match_str = 'wikipedia';
+        var blurbTitle;
+        var blurbText;
+        var oldOuterHTML;
+        var baseWikiAPIUrl = 'https://en.wikipedia.org/w/api.php?action=query' +
+            '&prop=extracts&format=json&exintro=&callback=?&titles=';
+        var destroyTooltips = {};
+
+        var blurb = $(document.createElement('div'))
+        blurb.addClass('blurb');
+        var blurbHeader = $('<div class="blurb-header">This is the header</div>');
+        var blurbContent = $(document.createElement('div'));
+        blurbContent.addClass('blurb-content');
+
+
+        function setBlurb(blurb, blurbText) {
+            /*
+             * Set Blurb text and other onEvents
+             */
+            if (!blurbText || blurbText.length < 5)
+                return blurb.remove();
+
+            blurb.html(blurbHeader);
+            blurbContent.html(blurbText);
+            blurb.append(blurbContent);
+            setTimeout(function() {
+                if (destroyTooltips[blurbTitle] === true) {
+                    destroyTooltips[blurbTitle] = false;
+                    console.log('time got through!');
+                }
+            }, 300);
+        }
+
+        for (var i=0;i<wiki_a_tag_els.length;i++) {
+
+            // Since we are adding custom alt text, remove title
+            wiki_a_tag_els[i].removeAttribute('title');
+            oldOuterHTML = wiki_a_tag_els[i].outerHTML;
+            el = $(wiki_a_tag_els[i]);
+            if (el.attr('href').indexOf(match_str !== -1)) {
+                $(el).hover(function() {
+                    blurbTitle = this.href.split('/').slice(-1)[0];
+                    if (destroyTooltips[blurbTitle] === false) {
+                        // Do not set an existing tooltip.
+                        return;
+                    }
+                    else {
+                        destroyTooltips = {};
+                    }
+                    if (blurb) {
+                        blurb.remove();
+                    }
+                    var aTagTop = $(this).offset().top;
+                    var aTagLeft = $(this).offset().left;
+                    blurb.css({top: aTagTop + 40, left: aTagLeft});
+                    destroyTooltips[blurbTitle] = true;
+                    $('#blurbContainer').append(blurb);
+                    var candBlurbText = localStorage.getItem(
+                            'wikiText' + blurbTitle);
+                    if (!candBlurbText) {
+                        $.getJSON(baseWikiAPIUrl + blurbTitle, function(res) {
+                            for (var first in res.query.pages) {
+                                blurbText = res.query.pages[first].extract;
+                                break;
+                            }
+                            setBlurb(blurb, candBlurbText);
+                            // Save the wikipedia API some bandwidth
+                            localStorage.setItem(
+                                    'wikiText' + blurbTitle, blurbText);
+                        });
+                    }
+                    else {
+                        setBlurb(blurb, candBlurbText);
+                    }
+                }, function() {
+                    blurbTitle = this.href.split('/').slice(-1)[0];
+                    if (destroyTooltips[blurbTitle]) {
+                        blurb.remove();
+                        delete destroyTooltips[blurbTitle];
+                    }
+                });
+            }
+        }
+    }
 }
