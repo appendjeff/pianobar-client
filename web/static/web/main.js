@@ -14,7 +14,7 @@ var lastArtistLookup = 'Not Bob Dylan'
 var oldBorder = {};
 var historyPageIndex = 0;
 var isAppendHistoryFinished = false;
-var blurb;
+var blurbs = {};
 
 
 function main(stationId) {
@@ -632,8 +632,9 @@ function main(stationId) {
           $('#artistInfoModal').openModal({
             dismissible: true,
             complete: function() {
-                if (blurb)
-                    blurb.remove();
+                for (var blurbTitle in blurbs) {
+                    blurbs[blurbTitle].remove();
+                }
             }
           });
       }
@@ -666,32 +667,38 @@ function main(stationId) {
          *      - Make the blurbs draggable.
          *
          */
+        blurbs = {};
         var wiki_a_el;
-        var match_str = 'wikipedia';
-        var blurbTitle;
-        var blurbText;
-        var oldOuterHTML;
+        var destroyTooltips = {};
         var baseWikiAPIUrl = 'https://en.wikipedia.org/w/api.php?action=query' +
             '&prop=extracts&format=json&exintro=&callback=?&titles=';
-        var destroyTooltips = {};
-
-        blurb = $(document.createElement('div'))
-        blurb.addClass('blurb');
-        var blurbHeader = $('<div class="blurb-header">This is the header</div>');
-        var blurbContent = $(document.createElement('div'));
-        blurbContent.addClass('blurb-content');
 
 
-        function setBlurb(blurb, blurbText) {
+        function setBlurb(blurbTitle, blurbText, topVal, leftVal) {
             /*
              * Set Blurb text and other onEvents
              */
             if (!blurbText || blurbText.length < 10)
-                return blurb.remove();
+                return;
 
-            blurb.html(blurbHeader);
+            var blurbHeader = $('<div class="blurb-header">This is the header. Pin to keep.</div>');
+            var blurbContent = $(document.createElement('div'));
+            blurbContent.addClass('blurb-content');
             blurbContent.html(blurbText);
-            blurb.append(blurbContent);
+
+            blurbs[blurbTitle] = $(document.createElement('div'));
+            blurbs[blurbTitle].css({top: topVal, left: leftVal});
+            blurbs[blurbTitle].addClass('blurb');
+            blurbs[blurbTitle].html(blurbHeader);
+
+
+            blurbs[blurbTitle].append(blurbContent);
+            blurbs[blurbTitle].mouseleave(function() {
+                blurbs[blurbTitle].fadeOut(function() {
+                    blurbs[blurbTitle].remove();
+                });
+            });
+            $('#blurbContainer').html(blurbs[blurbTitle].fadeIn());
             setTimeout(function() {
                 if (destroyTooltips[blurbTitle] === true) {
                     destroyTooltips[blurbTitle] = false;
@@ -700,38 +707,27 @@ function main(stationId) {
         }
 
         function wikiHoverOn() {
-            blurbTitle = this.href.split('/').slice(-1)[0];
-            if (destroyTooltips[blurbTitle] === false) {
-                // Do not set an existing tooltip.
-                return;
-            }
-            else {
-                destroyTooltips = {};
-            }
-            if (blurb) {
-                blurb.remove();
-            }
-            var aTagTop = $(this).offset().top;
-            var aTagLeft = $(this).offset().left;
-            blurb.css({top: aTagTop + 40, left: aTagLeft});
+            var blurbTitle = this.href.split('/').slice(-1)[0];
             destroyTooltips[blurbTitle] = true;
-            $('#blurbContainer').append(blurb);
+            var topVal = $(this).offset().top + 17;
+            var leftVal = $(this).offset().left;
             var candBlurbText = localStorage.getItem(
                     'wikiText' + blurbTitle);
             if (!candBlurbText) {
                 $.getJSON(baseWikiAPIUrl + blurbTitle, function(res) {
+                    var blurbText;
                     for (var first in res.query.pages) {
                         blurbText = res.query.pages[first].extract;
                         break;
                     }
-                    setBlurb(blurb, candBlurbText);
                     // Save the wikipedia API some bandwidth
                     localStorage.setItem(
                             'wikiText' + blurbTitle, blurbText);
+                    setBlurb(blurbTitle, blurbText, topVal, leftVal);
                 });
             }
             else {
-                setBlurb(blurb, candBlurbText);
+                setBlurb(blurbTitle, candBlurbText, topVal, leftVal);
             }
         }
 
@@ -739,13 +735,17 @@ function main(stationId) {
 
             // Since we are adding custom alt text, remove title
             wiki_a_tag_els[i].removeAttribute('title');
-            oldOuterHTML = wiki_a_tag_els[i].outerHTML;
             wiki_a_el = $(wiki_a_tag_els[i]);
-            if (wiki_a_el.attr('href').indexOf(match_str !== -1)) {
+            if (wiki_a_el.attr('href').indexOf('wikipedia') !== -1) {
+
+                // Add the hover handler to each wiki tag
                 $(wiki_a_el).hover(wikiHoverOn, function() {
-                    blurbTitle = this.href.split('/').slice(-1)[0];
+
+                    var blurbTitle = this.href.split('/').slice(-1)[0];
                     if (destroyTooltips[blurbTitle]) {
-                        blurb.remove();
+                        if (blurbs[blurbTitle]) {
+                            blurbs[blurbTitle].remove();
+                        }
                         delete destroyTooltips[blurbTitle];
                     }
                 });

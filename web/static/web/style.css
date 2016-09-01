@@ -204,8 +204,8 @@ ul.historyList li:hover {
 }
 
 #artistInfoModal {
-    overflow-y: hidden;
-    overflow-x: hidden;
+    overflow-y: auto;
+    overflow-x: auto;
 }
 
 #blurbContainer {
@@ -222,6 +222,7 @@ ul.historyList li:hover {
     width: 300px;
     font-size: 13px;
     z-index: 20000;
+    border-radius: 20px;
 }
 
 .blurb-header {
